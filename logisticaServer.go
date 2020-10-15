@@ -29,6 +29,10 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 func (s *server) GenerarOdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
 	log.Printf("Id orden: %v", ordenPyme.GetId())
 	idSeguimiento, err := strconv.Atoi(ordenPyme.GetId())
+	if err != nil {
+		log.Printf("Ocurrio un error al hacer la transformación de datos.")
+	}
+
 	log.Printf("Aqui deberia estar generandose la orden de Pyme")
 	return &pb.SeguimientoPyme{Id: int32(idSeguimiento)}, nil
 }
