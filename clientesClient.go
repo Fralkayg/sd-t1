@@ -127,9 +127,12 @@ func main() {
 
 	for (cantPedidosRetail + cantPedidosPyme) < 51 { //while algo pase xd 50 pedidos maybe?
 		opcion = rand.Intn(3)
+		opcionAux := strconv.Itoa(opcion)
 
+		log.Printf("Opcion: %v", opcionAux)
 		if opcion == 0 {
 			// orden pyme
+			log.Printf("Entro bien en orden PYME")
 			var seguimientoOrden int
 			seguimientoOrden = generarOrdenPyme(conn, cantPedidosPyme) //entrega el codigo de seguimiento
 			if seguimientoOrden != -1 {
@@ -139,6 +142,7 @@ func main() {
 
 		} else if opcion == 1 {
 			// orden retail
+			log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
 			seguimientoRetail = generarOrdenRetail(conn, cantPedidosRetail) //algo entregara xd
 			if seguimientoRetail != -1 {
@@ -148,9 +152,10 @@ func main() {
 		} else {
 			// pedir seguimiento
 			if cantPedidosPyme > 0 {
-				var randSeguimiento int
-				randSeguimiento = rand.Intn(cantPedidosPyme)
-				hacerSeguimiento(conn, codigoSeguimiento[randSeguimiento])
+				log.Printf("Entro bien en Seguimiento")
+				// var randSeguimiento int
+				// randSeguimiento = rand.Intn(cantPedidosPyme)
+				// hacerSeguimiento(conn, codigoSeguimiento[randSeguimiento])
 			}
 		}
 		time.Sleep(time.Duration(periodo) * time.Second)
