@@ -39,6 +39,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 		log.Printf("Leyendo archivo retail. Linea: %v", strconv.Itoa(i))
 
 		if lineaALeer == i {
+			log.Printf("Encontro la linea correspondiente en Retail. %v", strconv.Itoa(i))
 			valorInt, _ := strconv.Atoi(linea[2])
 			seguimientoRetail, errorRetail := c.GenerarOrdenRetail(context.Background(), &pb.OrdenRetail{
 				Id:       linea[0],
@@ -76,6 +77,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 		log.Printf("Leyendo archivo PYMES. Linea: %v", strconv.Itoa(i))
 
 		if lineaALeer == i {
+			log.Printf("Encontro la linea correspondiente en PYME. %v", strconv.Itoa(i))
 			valorInt, _ := strconv.Atoi(linea[2])
 			PrioriInt, _ := strconv.Atoi(linea[5])
 			seguimientoPyme, errorPyme := c.GenerarOrdenPyme(context.Background(), &pb.OrdenPyme{
@@ -131,8 +133,8 @@ func main() {
 	var cantPedidosRetail int
 	var cantPedidosPyme int
 	var opcion int
-	cantPedidosRetail = 0
-	cantPedidosPyme = 0
+	cantPedidosRetail = 1
+	cantPedidosPyme = 1
 	opcion = 0
 
 	for (cantPedidosRetail + cantPedidosPyme) < 51 { //while algo pase xd 50 pedidos maybe?
