@@ -26,7 +26,7 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
-func (s *server) GenerarOdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
+func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
 	log.Printf("Id orden: %v", ordenPyme.GetId())
 	idSeguimiento, err := strconv.Atoi(ordenPyme.GetId())
 	if err != nil {
