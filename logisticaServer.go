@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -20,8 +21,20 @@ const (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	seguimiento int
-	lock        bool
+	seguimiento     int
+	lock            bool
+	colaRetail      []paquete
+	colaPrioritario []paquete
+	colaNormal      []paquete
+}
+
+type paquete struct {
+	IDPaquete   string
+	Seguimiento int
+	Tipo        string
+	Valor       int
+	Intentos    int
+	Estado      string
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -41,7 +54,23 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	s.seguimiento++
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
-
+	if ordenPyme.GetPrioritario() == 1 {
+		enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
+			Seguimiento: s.seguimiento,
+			Tipo:        "Prioritario",
+			Valor:       int(ordenPyme.GetValor()),
+			Intentos:    0,
+			Estado:      "En bodega"})
+	} else {
+		enqueue(s.colaNormal, paquete{IDPaquete: ordenPyme.GetId(),
+			Seguimiento: s.seguimiento,
+			Tipo:        "Normal",
+			Valor:       int(ordenPyme.GetValor()),
+			Intentos:    0,
+			Estado:      "En bodega"})
+	}
+	fmt.Println("Cola prioritario: ", s.colaPrioritario)
+	fmt.Println("Cola normal: ", s.colaNormal)
 	log.Printf("Aqui deberia estar generandose la orden de Pyme")
 
 	s.lock = false
@@ -58,8 +87,15 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 	s.seguimiento++
 
 	registroOrdenRetail(ordenRetail, s.seguimiento)
+	enqueue(s.colaRetail, paquete{IDPaquete: ordenRetail.GetId(),
+		Seguimiento: s.seguimiento,
+		Tipo:        "Retail",
+		Valor:       int(ordenRetail.GetValor()),
+		Intentos:    0,
+		Estado:      "En bodega"})
 
 	log.Printf("Aqui deberia estar generandose la orden Retail")
+	fmt.Println("Cola retail: ", s.colaRetail)
 
 	s.lock = false
 	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
@@ -69,7 +105,7 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		seguimientoAux, errAux := os.Create("./registro.csv")
-		if errAux != nil{
+		if errAux != nil {
 			log.Printf("wea")
 		}
 		seguimientoFile = seguimientoAux
@@ -104,7 +140,7 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 	if err != nil {
 		seguimientoAux, errAux := os.Create("./registro.csv")
 		seguimientoFile = seguimientoAux
-		if errAux != nil{
+		if errAux != nil {
 			log.Printf("wea2")
 		}
 		log.Printf("Hubo un error al abrir/crear archivo seguimiento. Tipo: Retail")
@@ -135,6 +171,18 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 
 	csvWriter := csv.NewWriter(seguimientoFile)
 	csvWriter.WriteAll(fileData)
+}
+
+func enqueue(queue []paquete, element paquete) []paquete {
+	queue = append(queue, element) // Simply append to enqueue.
+	// fmt.Println("Enqueued:", element)
+	return queue
+}
+
+func dequeue(queue []paquete) []paquete {
+	element := queue[0] // The first element is the one to be dequeued.
+	// fmt.Println("Dequeued:", element)
+	return queue[1:] // Slice off the element once it is dequeued.
 }
 
 func main() {
