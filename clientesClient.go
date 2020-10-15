@@ -34,7 +34,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
-	seguimientoPyme, errorPyme := c.GenerarOrdenPyme(ctx, &pb.OrdenPyme{Id: 1, Producto: "Caca", Valor: 1000, Origen: "Camilo", Destino: "Water", Prioritario: 1})
+	seguimientoPyme, errorPyme := c.GenerarOrdenPyme(ctx, &pb.OrdenPyme{Id: "1", Producto: "Caca", Valor: 1000, Origen: "Camilo", Destino: "Water", Prioritario: 1})
 
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -44,7 +44,7 @@ func main() {
 		log.Fatalf("Error al enviar orden PYME")
 	}
 
-	log.Printf("Se recibio exitosamente su orden. Su ID de seguimiento es: %v", strconv.Itoa(seguimientoPyme.Id))
+	log.Printf("Se recibio exitosamente su orden. Su ID de seguimiento es: %v", strconv.Itoa(int(seguimientoPyme.Id)))
 
 	log.Printf("Greeting: %s", r.GetMessage())
 }
