@@ -24,7 +24,7 @@ const (
 func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	file, _ := os.Open("retail.csv")
+	file, _ := os.Open("./retail.csv")
 	fileReader := csv.NewReader(bufio.NewReader(file))
 	for i := 1; true; i++ {
 		linea, error := fileReader.Read()
@@ -61,7 +61,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	file, _ := os.Open("pyme.csv")
+	file, _ := os.Open("./pyme.csv")
 	fileReader := csv.NewReader(bufio.NewReader(file))
 	for i := 1; true; i++ {
 		linea, error := fileReader.Read()
