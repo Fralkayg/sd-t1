@@ -19,6 +19,7 @@ const (
 type server struct {
 	seguimientoPyme   int
 	seguimientoRetail int
+	lock              bool
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -28,17 +29,29 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
+	//Chequear si el servidor esta ocupado en otro requerimiento
+	for s.lock {
+	}
+
+	s.lock = true
+
 	log.Printf("Id orden: %v", ordenPyme.GetId())
 	idSeguimiento, err := strconv.Atoi(ordenPyme.GetId())
 	if err != nil {
 		log.Printf("Ocurrio un error al hacer la transformación de datos.")
 	}
-
 	log.Printf("Aqui deberia estar generandose la orden de Pyme")
+
+	s.lock = false
 	return &pb.SeguimientoPyme{Id: int32(idSeguimiento)}, nil
 }
 
 func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRetail) (*pb.SeguimientoRetail, error) {
+	for s.lock {
+	}
+
+	s.lock = true
+
 	log.Printf("Id orden: %v", ordenRetail.GetId())
 	idSeguimiento, err := strconv.Atoi(ordenRetail.GetId())
 	if err != nil {
@@ -46,6 +59,8 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 	}
 
 	log.Printf("Aqui deberia estar generandose la orden Retail")
+
+	s.lock = false
 	return &pb.SeguimientoRetail{Id: int32(idSeguimiento)}, nil
 }
 
@@ -58,9 +73,10 @@ func main() {
 
 	s := server{}
 
-	//Contador para indicar el ID de seguimiento para cada uno de los servicios.
+	//Inicializacion variables servidor logistica.
 	s.seguimientoPyme = 0
 	s.seguimientoRetail = 0
+	s.lock = false
 
 	pb.RegisterLogisticaServiceServer(grpcServer, &s)
 	if err := grpcServer.Serve(lis); err != nil {
