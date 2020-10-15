@@ -37,10 +37,10 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 		linea, error := fileReader.Read()
 
 		if error == io.EOF {
-			return 0
+			return -1
 		} else if error != nil {
 			log.Fatal(error)
-			continue
+			return -1
 		}
 
 		if lineaALeer == i {
@@ -59,8 +59,10 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 				log.Printf("Se recibio exitosamente su orden. ")
 				//Su ID de seguimiento es: %v", strconv.Itoa(int(seguimientoRetail.Id)
 			}
+			return int(seguimientoRetail.Id)
 		}
 	}
+	return -1
 }
 
 func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
@@ -78,7 +80,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	for i := 0; true; i++ {
 		linea, error := fileReader.Read()
 		if error == io.EOF {
-			return 0
+			return -1
 		} else if error != nil {
 			log.Fatal(error)
 			continue
@@ -137,7 +139,7 @@ func main() {
 			// orden pyme
 			var seguimientoOrden int
 			seguimientoOrden = generarOrdenPyme(conn, cantPedidosPyme) //entrega el codigo de seguimiento
-			if seguimientoOrden != 0 {
+			if seguimientoOrden != -1 {
 				codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
 				cantPedidosPyme++
 			}
@@ -146,7 +148,7 @@ func main() {
 			// orden retail
 			var seguimientoRetail int
 			seguimientoRetail = generarOrdenRetail(conn, cantPedidosRetail) //algo entregara xd
-			if seguimientoRetail != 0 {
+			if seguimientoRetail != -1 {
 				cantPedidosRetail++
 			}
 
