@@ -73,18 +73,22 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 
 	timestamp := time.Now()
 
-	row := []string{timestamp.String(),
+	var fileData [][]string
+
+	log.Printf("Generando linea en archivo registro.csv")
+
+	fileData = append(fileData, []string{timestamp.String(),
 		strconv.Itoa(idSeguimiento),
-		"retail", ordenRetail.GetProducto(),
+		"retail",
+		ordenRetail.GetProducto(),
 		strconv.Itoa(int(ordenRetail.GetValor())),
 		ordenRetail.GetOrigen(),
 		ordenRetail.GetDestino(),
-		strconv.Itoa(idSeguimiento)}
+		strconv.Itoa(idSeguimiento)})
 
 	csvWriter := csv.NewWriter(seguimientoFile)
-	strWrite := [][]string{row}
-	csvWriter.WriteAll(strWrite)
-	csvWriter.Flush()
+	csvWriter.WriteAll(data)
+	// csvWriter.Flush()
 }
 
 // func registroOrdenPyme(ordenPyme *pb.OrdenPyme) {
