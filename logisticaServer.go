@@ -25,6 +25,14 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
+func (s *server) GenerarOdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
+	log.Printf("Id orden: %v", ordenPyme.GetId())
+	var idSeguimiento = ordenPyme.GetId()
+	var errorPyme = false
+	log.Printf("Aqui deberia estar generandose la orden de Pyme")
+	return &pb.SeguimientoPyme{Id: idSeguimiento}, errorPyme
+}
+
 func main() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
