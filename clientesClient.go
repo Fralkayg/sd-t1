@@ -61,7 +61,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	file, _ := os.Open("./pyme.csv")
+	file, _ := os.Open("./pymes.csv")
 	fileReader := csv.NewReader(bufio.NewReader(file))
 	for i := 1; true; i++ {
 		linea, error := fileReader.Read()
