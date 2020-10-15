@@ -83,7 +83,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 			return -1
 		} else if error != nil {
 			log.Fatal(error)
-			continue
+			return -1
 		}
 
 		if lineaALeer == i {
@@ -106,6 +106,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 			}
 		}
 	}
+	return -1
 }
 
 func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
