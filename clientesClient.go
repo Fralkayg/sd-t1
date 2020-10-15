@@ -21,7 +21,7 @@ const (
 	defaultName = "world"
 )
 
-func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) {
+func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 	// Contact the server and print out its response.
 	name := defaultName
@@ -48,7 +48,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) {
 			seguimientoRetail, errorRetail := c.GenerarOrdenRetail(ctx, &pb.OrdenRetail{
 				Id:       linea[0],
 				Producto: linea[1],
-				Valor:    valorInt,
+				Valor:    int32(valorInt),
 				Origen:   linea[3],
 				Destino:  linea[4],
 			})
@@ -63,7 +63,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) {
 	}
 }
 
-func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) {
+func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 	// Contact the server and print out its response.
 	name := defaultName
@@ -90,10 +90,10 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) {
 			seguimientoPyme, errorPyme := c.GenerarOrdenPyme(ctx, &pb.OrdenPyme{
 				Id:          linea[0],
 				Producto:    linea[1],
-				Valor:       valorInt,
+				Valor:       int32(valorInt),
 				Origen:      linea[3],
 				Destino:     linea[4],
-				Prioritario: PrioriInt})
+				Prioritario: int32(PrioriInt)})
 
 			if errorPyme != nil {
 				log.Fatalf("Error al enviar orden PYME")
@@ -126,6 +126,9 @@ func main() {
 	var cantPedidosRetail int
 	var cantPedidosPyme int
 	var opcion int
+	cantPedidosRetail = 0
+	cantPedidosPyme = 0
+	opcion = 0
 
 	for (cantPedidosRetail + cantPedidosPyme) < 51 { //while algo pase xd 50 pedidos maybe?
 		opcion = rand.Intn(3)
@@ -150,8 +153,9 @@ func main() {
 		} else {
 			// pedir seguimiento
 			if cantPedidosPyme > 0 {
-				rand_seguimiento = rand.Intn(cantPedidosPyme)
-				hacerSeguimiento(conn, codigoSeguimiento[rand_seguimiento])
+				var randSeguimiento int
+				randSeguimiento = rand.Intn(cantPedidosPyme)
+				hacerSeguimiento(conn, codigoSeguimiento[randSeguimiento])
 			}
 		}
 		time.Sleep(time.Duration(periodo) * time.Second)
