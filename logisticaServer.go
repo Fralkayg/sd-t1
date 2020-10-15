@@ -40,6 +40,8 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	log.Printf("Id orden: %v", ordenPyme.GetId())
 	s.seguimiento++
 
+	registroOrdenPyme(ordenPyme, s.seguimiento)
+
 	log.Printf("Aqui deberia estar generandose la orden de Pyme")
 
 	s.lock = false
@@ -64,7 +66,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 }
 
 func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
-	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_CREATE, os.ModeAppend)
+	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		log.Printf("Hubo un error al abrir/crear archivo seguimiento. Tipo: Retail")
 	}
@@ -75,7 +77,7 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 
 	var fileData [][]string
 
-	log.Printf("Generando linea en archivo registro.csv")
+	log.Printf("Generando linea en archivo registro.csv, Retail")
 
 	fileData = append(fileData, []string{timestamp.String(),
 		strconv.Itoa(idSeguimiento),
@@ -91,9 +93,38 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 	// csvWriter.Flush()
 }
 
-// func registroOrdenPyme(ordenPyme *pb.OrdenPyme) {
+func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
+	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		log.Printf("Hubo un error al abrir/crear archivo seguimiento. Tipo: Retail")
+	}
 
-// }
+	defer seguimientoFile.Close()
+
+	timestamp := time.Now()
+
+	var tipoPyme string
+	if ordenPyme.GetPrioritario() == 1 {
+		tipoPyme = "prioritario"
+	} else {
+		tipoPyme = "normal"
+	}
+
+	log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
+
+	var fileData [][]string
+	fileData = append(fileData, []string{timestamp.String(),
+		strconv.Itoa(idSeguimiento),
+		tipoPyme,
+		ordenPyme.GetProducto(),
+		strconv.Itoa(int(ordenPyme.GetValor())),
+		ordenPyme.GetOrigen(),
+		ordenPyme.GetDestino(),
+		strconv.Itoa(idSeguimiento)})
+
+	csvWriter := csv.NewWriter(seguimientoFile)
+	csvWriter.WriteAll(fileData)
+}
 
 func main() {
 	lis, err := net.Listen("tcp", port)
