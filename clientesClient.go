@@ -101,6 +101,20 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	return -1
 }
 
+func pymeTest(conn *grpc.ClientConn, codigoSeguimiento int) int {
+	c := pb.NewLogisticaServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	seguimientoPyme, errorPyme := c.GenerarOrdenPyme(ctx, &pb.OrdenPyme{Id: "1", Producto: "Caca", Valor: 1000, Origen: "Camilo", Destino: "Water", Prioritario: 1})
+	if errorPyme != nil {
+		log.Fatalf("Error al enviar orden PYME")
+	} else {
+		log.Printf("Se recibio exitosamente su orden. Su ID de seguimiento es: %v", strconv.Itoa(int(seguimientoPyme.Id)))
+		return int(seguimientoPyme.Id)
+	}
+	return -1
+}
+
 func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
 	// c := pb.NewLogisticaServiceClient(conn)
 	//pedir algo xd
@@ -133,12 +147,14 @@ func main() {
 		if opcion == 0 {
 			// orden pyme
 			log.Printf("Entro bien en orden PYME")
+			// var seguimientoOrden int
+			// seguimientoOrden = generarOrdenPyme(conn, cantPedidosPyme) //entrega el codigo de seguimiento
+			// if seguimientoOrden != -1 {
+			// 	codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
+			// 	cantPedidosPyme++
+			// }
 			var seguimientoOrden int
-			seguimientoOrden = generarOrdenPyme(conn, cantPedidosPyme) //entrega el codigo de seguimiento
-			if seguimientoOrden != -1 {
-				codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
-				cantPedidosPyme++
-			}
+			seguimientoOrden = pymeTest(conn, cantPedidosPyme)
 
 		} else if opcion == 1 {
 			// orden retail
