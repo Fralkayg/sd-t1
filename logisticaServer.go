@@ -5,6 +5,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"strconv"
 
 	pb "github.com/Fralkayg/sd-t1/Service"
 	"google.golang.org/grpc"
@@ -23,6 +24,17 @@ type server struct {
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
+}
+
+func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
+	log.Printf("Id orden: %v", ordenPyme.GetId())
+	idSeguimiento, err := strconv.Atoi(ordenPyme.GetId())
+	if err != nil {
+		log.Printf("Ocurrio un error al hacer la transformación de datos.")
+	}
+
+	log.Printf("Aqui deberia estar generandose la orden de Pyme")
+	return &pb.SeguimientoPyme{Id: int32(idSeguimiento)}, nil
 }
 
 func main() {
