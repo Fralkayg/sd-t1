@@ -5,6 +5,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	pb "github.com/Fralkayg/sd-t1/Service"
@@ -40,10 +41,10 @@ func main() {
 	}
 
 	if errorPyme != nil {
-		log.Faltaf("Error al enviar orden PYME: %v", errorPyme)
+		log.Fatalf("Error al enviar orden PYME")
 	}
 
-	log.Printf("Se recibio exitosamente su orden. Su ID de seguimiento es: %v", seguimientoPyme.Id)
+	log.Printf("Se recibio exitosamente su orden. Su ID de seguimiento es: %v", strconv.Itoa(seguimientoPyme.Id))
 
 	log.Printf("Greeting: %s", r.GetMessage())
 }

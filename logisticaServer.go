@@ -5,6 +5,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"strconv"
 
 	pb "github.com/Fralkayg/sd-t1/Service"
 	"google.golang.org/grpc"
@@ -27,10 +28,9 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 func (s *server) GenerarOdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
 	log.Printf("Id orden: %v", ordenPyme.GetId())
-	var idSeguimiento = ordenPyme.GetId()
-	var errorPyme = false
+	idSeguimiento, err = strconv.Atoi(ordenPyme.GetId())
 	log.Printf("Aqui deberia estar generandose la orden de Pyme")
-	return &pb.SeguimientoPyme{Id: idSeguimiento}, errorPyme
+	return &pb.SeguimientoPyme{Id: idSeguimiento}, nil
 }
 
 func main() {
