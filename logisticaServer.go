@@ -87,7 +87,7 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 		strconv.Itoa(idSeguimiento)})
 
 	csvWriter := csv.NewWriter(seguimientoFile)
-	csvWriter.WriteAll(data)
+	csvWriter.WriteAll(fileData)
 	// csvWriter.Flush()
 }
 
