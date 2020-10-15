@@ -24,9 +24,6 @@ const (
 func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
 	file, _ := os.Open("retail.csv")
 	fileReader := csv.NewReader(bufio.NewReader(file))
 	for i := 1; true; i++ {
@@ -41,7 +38,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 
 		if lineaALeer == i {
 			valorInt, _ := strconv.Atoi(linea[2])
-			seguimientoRetail, errorRetail := c.GenerarOrdenRetail(ctx, &pb.OrdenRetail{
+			seguimientoRetail, errorRetail := c.GenerarOrdenRetail(context.Background(), &pb.OrdenRetail{
 				Id:       linea[0],
 				Producto: linea[1],
 				Valor:    int32(valorInt),
@@ -64,9 +61,6 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
 	file, _ := os.Open("pyme.csv")
 	fileReader := csv.NewReader(bufio.NewReader(file))
 	for i := 1; true; i++ {
@@ -81,7 +75,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 		if lineaALeer == i {
 			valorInt, _ := strconv.Atoi(linea[2])
 			PrioriInt, _ := strconv.Atoi(linea[5])
-			seguimientoPyme, errorPyme := c.GenerarOrdenPyme(ctx, &pb.OrdenPyme{
+			seguimientoPyme, errorPyme := c.GenerarOrdenPyme(context.Background(), &pb.OrdenPyme{
 				Id:          linea[0],
 				Producto:    linea[1],
 				Valor:       int32(valorInt),
@@ -103,9 +97,8 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 
 func pymeTest(conn *grpc.ClientConn, codigoSeguimiento int) int {
 	c := pb.NewLogisticaServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	seguimientoPyme, errorPyme := c.GenerarOrdenPyme(ctx, &pb.OrdenPyme{Id: "1", Producto: "Caca", Valor: 1000, Origen: "Camilo", Destino: "Water", Prioritario: 1})
+
+	seguimientoPyme, errorPyme := c.GenerarOrdenPyme(context.Background(), &pb.OrdenPyme{Id: "1", Producto: "Caca", Valor: 1000, Origen: "Camilo", Destino: "Water", Prioritario: 1})
 	if errorPyme != nil {
 		log.Fatalf("Error al enviar orden PYME")
 	} else {
@@ -147,18 +140,18 @@ func main() {
 		if opcion == 0 {
 			// orden pyme
 			log.Printf("Entro bien en orden PYME")
-			// var seguimientoOrden int
-			// seguimientoOrden = generarOrdenPyme(conn, cantPedidosPyme) //entrega el codigo de seguimiento
-			// if seguimientoOrden != -1 {
-			// 	codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
-			// 	cantPedidosPyme++
-			// }
 			var seguimientoOrden int
-			seguimientoOrden = pymeTest(conn, cantPedidosPyme)
-			codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
-			
-			log.Printf("Orden seguimiento PYME: %v", strconv.Itoa(seguimientoOrden))
-			cantPedidosPyme++
+			seguimientoOrden = generarOrdenPyme(conn, cantPedidosPyme) //entrega el codigo de seguimiento
+			if seguimientoOrden != -1 {
+				codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
+				cantPedidosPyme++
+			}
+			// var seguimientoOrden int
+			// seguimientoOrden = pymeTest(conn, cantPedidosPyme)
+			// codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
+
+			// log.Printf("Orden seguimiento PYME: %v", strconv.Itoa(seguimientoOrden))
+			// cantPedidosPyme++
 
 		} else if opcion == 1 {
 			// orden retail
