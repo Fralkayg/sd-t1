@@ -155,6 +155,10 @@ func main() {
 			// }
 			var seguimientoOrden int
 			seguimientoOrden = pymeTest(conn, cantPedidosPyme)
+			codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
+			aux, _ := strconv.Atoi(seguimientoOrden)
+			log.Printf("Orden seguimiento PYME: %v", aux)
+			cantPedidosPyme++
 
 		} else if opcion == 1 {
 			// orden retail
