@@ -36,6 +36,8 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 			return -1
 		}
 
+		log.Printf("Leyendo archivo retail. Linea: %v", strconv.Itoa(i))
+
 		if lineaALeer == i {
 			valorInt, _ := strconv.Atoi(linea[2])
 			seguimientoRetail, errorRetail := c.GenerarOrdenRetail(context.Background(), &pb.OrdenRetail{
@@ -71,6 +73,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 			log.Fatal(error)
 			return -1
 		}
+		log.Printf("Leyendo archivo PYMES. Linea: %v", strconv.Itoa(i))
 
 		if lineaALeer == i {
 			valorInt, _ := strconv.Atoi(linea[2])
