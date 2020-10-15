@@ -23,11 +23,7 @@ const (
 
 func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
-	// Contact the server and print out its response.
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -67,11 +63,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 
 func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
-	// Contact the server and print out its response.
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -110,7 +102,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 }
 
 func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
-	c := pb.NewLogisticaServiceClient(conn)
+	// c := pb.NewLogisticaServiceClient(conn)
 	//pedir algo xd
 }
 
