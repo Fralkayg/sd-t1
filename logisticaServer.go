@@ -38,7 +38,7 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	return &pb.SeguimientoPyme{Id: int32(idSeguimiento)}, nil
 }
 
-func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRetail) (*pb.OrdenRetail, error) {
+func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRetail) (*pb.SeguimientoRetail, error) {
 	log.Printf("Id orden: %v", ordenRetail.GetId())
 	idSeguimiento, err := strconv.Atoi(ordenRetail.GetId())
 	if err != nil {
