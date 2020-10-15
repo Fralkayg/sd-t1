@@ -180,7 +180,7 @@ func enqueue(queue []paquete, element paquete) []paquete {
 }
 
 func dequeue(queue []paquete) []paquete {
-	element := queue[0] // The first element is the one to be dequeued.
+	//element := queue[0] // The first element is the one to be dequeued.
 	// fmt.Println("Dequeued:", element)
 	return queue[1:] // Slice off the element once it is dequeued.
 }
