@@ -68,18 +68,24 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
+		seguimientoAux, errAux := os.Create("./registro.csv")
+		if errAux != nil{
+			log.Printf("wea")
+		}
+		seguimientoFile = seguimientoAux
 		log.Printf("Hubo un error al abrir/crear archivo seguimiento. Tipo: Retail")
 	}
 
 	defer seguimientoFile.Close()
 
 	timestamp := time.Now()
+	timeString := timestamp.Format("2020-01-01 00:00")
 
 	var fileData [][]string
 
 	log.Printf("Generando linea en archivo registro.csv, Retail")
 
-	fileData = append(fileData, []string{timestamp.String(),
+	fileData = append(fileData, []string{timeString,
 		strconv.Itoa(idSeguimiento),
 		"retail",
 		ordenRetail.GetProducto(),
@@ -96,6 +102,11 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
+		seguimientoAux, errAux := os.Create("./registro.csv")
+		seguimientoFile = seguimientoAux
+		if errAux != nil{
+			log.Printf("wea2")
+		}
 		log.Printf("Hubo un error al abrir/crear archivo seguimiento. Tipo: Retail")
 	}
 
@@ -113,7 +124,7 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 	log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
 
 	var fileData [][]string
-	fileData = append(fileData, []string{timestamp.String(),
+	fileData = append(fileData, []string{timestamp.Format("2020-01-01 00:00"),
 		strconv.Itoa(idSeguimiento),
 		tipoPyme,
 		ordenPyme.GetProducto(),
