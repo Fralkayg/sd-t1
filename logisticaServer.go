@@ -16,7 +16,7 @@ const (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	pb.UnimplementedGreeterServer
+	pb.UnimplementedLogisticaServiceServer
 }
 
 // SayHello implements helloworld.GreeterServer
