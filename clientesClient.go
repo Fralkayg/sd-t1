@@ -29,7 +29,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 
 	file, _ := os.Open("retail.csv")
 	fileReader := csv.NewReader(bufio.NewReader(file))
-	for i := 0; true; i++ {
+	for i := 1; true; i++ {
 		linea, error := fileReader.Read()
 
 		if error == io.EOF {
@@ -69,7 +69,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 
 	file, _ := os.Open("pyme.csv")
 	fileReader := csv.NewReader(bufio.NewReader(file))
-	for i := 0; true; i++ {
+	for i := 1; true; i++ {
 		linea, error := fileReader.Read()
 		if error == io.EOF {
 			return -1
