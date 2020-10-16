@@ -126,27 +126,27 @@ func main() {
 	}
 	defer conn.Close()
 
-	camion1 := &Camion{
-		Tipo:          "retail",
-		Id:            1,
-		infoPaquete1:  infoPaquete{},
-		infoPaquete2:  infoPaquete{},
-		cantPaquetes:  0,
-		entregaRetail: false}
-	camion2 := &Camion{
-		Tipo:          "retail",
-		Id:            2,
-		infoPaquete1:  infoPaquete{},
-		infoPaquete2:  infoPaquete{},
-		cantPaquetes:  0,
-		entregaRetail: false}
-	camion3 := &Camion{
-		Tipo:          "normal",
-		Id:            3,
-		infoPaquete1:  infoPaquete{},
-		infoPaquete2:  infoPaquete{},
-		cantPaquetes:  0,
-		entregaRetail: false}
+	// camion1 := &Camion{
+	// 	Tipo:          "retail",
+	// 	Id:            1,
+	// 	infoPaquete1:  infoPaquete{},
+	// 	infoPaquete2:  infoPaquete{},
+	// 	cantPaquetes:  0,
+	// 	entregaRetail: false}
+	// camion2 := &Camion{
+	// 	Tipo:          "retail",
+	// 	Id:            2,
+	// 	infoPaquete1:  infoPaquete{},
+	// 	infoPaquete2:  infoPaquete{},
+	// 	cantPaquetes:  0,
+	// 	entregaRetail: false}
+	// camion3 := &Camion{
+	// 	Tipo:          "normal",
+	// 	Id:            3,
+	// 	infoPaquete1:  infoPaquete{},
+	// 	infoPaquete2:  infoPaquete{},
+	// 	cantPaquetes:  0,
+	// 	entregaRetail: false}
 
 	var waitTime int
 	log.Printf("Ingrese el tiempo de espera de 2do paquete: ")
