@@ -88,7 +88,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 	intentosTotales = 0
 
 	for intentosTotales < 2 {
-		log.Println("Cantidad de intentos entrega normal: &v", strconv.Itoa(intentosTotales))
+		// log.Println("Cantidad de intentos entrega normal: &v", strconv.Itoa(intentosTotales))
 		if truck.infoPaquete1.Valor > truck.infoPaquete2.Valor && truck.infoPaquete1.entregado == false {
 			//
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
@@ -170,7 +170,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 	intentosTotales = 0
 
 	for intentosTotales < 3 {
-		log.Println("Cantidad de intentos entrega retail: &v", strconv.Itoa(intentosTotales))
+		// log.Println("Cantidad de intentos entrega retail: &v", strconv.Itoa(intentosTotales))
 		if truck.infoPaquete1.Valor > truck.infoPaquete2.Valor && truck.infoPaquete1.entregado == false {
 			//
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
