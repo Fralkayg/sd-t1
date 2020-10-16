@@ -187,7 +187,8 @@ func dequeue(queue []paquete) ([]paquete, paquete) {
 }
 
 func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
-	if camion.Tipo == "retail" {
+	fmt.Printf("Camion: %v. Entrega retail: %t", strconv.Itoa(int(camion.GetId())), camion.GetEntregaRetail())
+	if camion.GetTipo() == "retail" {
 		if len(s.colaRetail) > 0 {
 			colaRetail, paquete := dequeue(s.colaRetail)
 			s.colaRetail = colaRetail
@@ -202,7 +203,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				//Falta agregar origen y destino
 			}
 		} else {
-			if camion.EntregaRetail {
+			if camion.GetEntregaRetail() {
 				if len(s.colaPrioritario) > 0 {
 					colaPrioritario, paquete := dequeue(s.colaPrioritario)
 					s.colaPrioritario = colaPrioritario
@@ -218,7 +219,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				}
 			}
 		}
-	} else if camion.Tipo == "normal" {
+	} else if camion.GetTipo() == "normal" {
 		if len(s.colaPrioritario) > 0 {
 			colaPrioritario, paquete := dequeue(s.colaPrioritario)
 			s.colaPrioritario = colaPrioritario
