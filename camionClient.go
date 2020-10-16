@@ -38,7 +38,7 @@ type infoPaquete struct {
 
 func ochentaPorcientoXD() bool {
 	rand.Seed(time.Now().UnixNano())
-	probabilidad = rand.Intn(100)
+	probabilidad := rand.Intn(100)
 
 	if probabilidad < 81 {
 		return true
@@ -48,43 +48,43 @@ func ochentaPorcientoXD() bool {
 
 }
 
-func entregaRetail() {
-	var intentosTotales int
-	intentosTotales = 0
+// func entregaRetail() {
+// 	var intentosTotales int
+// 	intentosTotales = 0
 
-	for intentosTotales < 3 {
-		if infoPaquete1.Valor > infoPaquete2.Valor {
-			if ochentaPorcientoXD() == true {
-				timestamp = time.Now()
-				// enviar info de paquete 1 enviado
-			} else {
-				infoPaquete1.Intentos++
-			}
+// 	for intentosTotales < 3 {
+// 		if infoPaquete1.Valor > infoPaquete2.Valor {
+// 			if ochentaPorcientoXD() == true {
+// 				timestamp = time.Now()
+// 				// enviar info de paquete 1 enviado
+// 			} else {
+// 				infoPaquete1.Intentos++
+// 			}
 
-			if ochentaPorcientoXD() == true {
-				timestamp = time.Now()
-				// enviar info de paquete 1 enviado
-			} else {
-				infoPaquete2.Intentos++
-			}
-		} else {
-			if ochentaPorcientoXD() == true {
-				timestamp = time.Now()
-				// enviar info de paquete 1 enviado
-			} else {
-				infoPaquete2.Intentos++
-			}
+// 			if ochentaPorcientoXD() == true {
+// 				timestamp = time.Now()
+// 				// enviar info de paquete 1 enviado
+// 			} else {
+// 				infoPaquete2.Intentos++
+// 			}
+// 		} else {
+// 			if ochentaPorcientoXD() == true {
+// 				timestamp = time.Now()
+// 				// enviar info de paquete 1 enviado
+// 			} else {
+// 				infoPaquete2.Intentos++
+// 			}
 
-			if ochentaPorcientoXD() == true {
-				timestamp = time.Now()
-				// enviar info de paquete 1 enviado
-			} else {
-				infoPaquete1.Intentos++
-			}
-		}
-		intentosTotales++
-	}
-}
+// 			if ochentaPorcientoXD() == true {
+// 				timestamp = time.Now()
+// 				// enviar info de paquete 1 enviado
+// 			} else {
+// 				infoPaquete1.Intentos++
+// 			}
+// 		}
+// 		intentosTotales++
+// 	}
+// }
 
 func pedirPaquete(conn *grpc.ClientConn, truck Camion) {
 	//weas raras
