@@ -269,11 +269,11 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 	return infoPaquete
 }
 
-func cargarCamion(conn *grpc.ClientConn, truck Camion, waitTime int) {
-	truck.infoPaquete1 = pedirPaquete(conn, &truck)
+func cargarCamion(conn *grpc.ClientConn, truck *Camion, waitTime int) {
+	truck.infoPaquete1 = pedirPaquete(conn, truck)
 	if truck.cantPaquetes == 1 {
 		time.Sleep(time.Duration(waitTime) * time.Second)
-		truck.infoPaquete2 = pedirPaquete(conn, &truck)
+		truck.infoPaquete2 = pedirPaquete(conn, truck)
 	}
 }
 
@@ -313,15 +313,15 @@ func main() {
 	for {
 		// carga de paquetes
 		if camion1.cantPaquetes == 0 {
-			cargarCamion(conn, *camion1, waitTime)
+			cargarCamion(conn, camion1, waitTime)
 			log.Printf("Camion 1 cargado")
 		}
 		if camion2.cantPaquetes == 0 {
-			cargarCamion(conn, *camion2, waitTime)
+			cargarCamion(conn, camion2, waitTime)
 			log.Printf("Camion 2 cargado")
 		}
 		if camion3.cantPaquetes == 0 {
-			cargarCamion(conn, *camion3, waitTime)
+			cargarCamion(conn, camion3, waitTime)
 			log.Printf("Camion 3 cargado")
 		}
 
