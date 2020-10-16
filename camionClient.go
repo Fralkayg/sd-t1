@@ -88,7 +88,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 	intentosTotales = 0
 
 	for intentosTotales < 2 {
-
+		log.Println("Cantidad de intentos entrega normal: &v", strconv.Itoa(intentosTotales))
 		if truck.infoPaquete1.Valor > truck.infoPaquete2.Valor && truck.infoPaquete1.entregado == false {
 			//
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
@@ -156,9 +156,9 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
 	}
 
-	fmt.Println("Entrega normal \n")
-	fmt.Println("Estado paquete 1: %t", truck.infoPaquete1.entregado)
-	fmt.Println("Estado paquete 1: %t", truck.infoPaquete2.entregado)
+	fmt.Printf("Entrega normal \n")
+	fmt.Printf("Estado paquete 1: %t\n", truck.infoPaquete1.entregado)
+	fmt.Printf("Estado paquete 2: %t\n", truck.infoPaquete2.entregado)
 
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
@@ -169,7 +169,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 	intentosTotales = 0
 
 	for intentosTotales < 3 {
-
+		log.Println("Cantidad de intentos entrega retail: &v", strconv.Itoa(intentosTotales))
 		if truck.infoPaquete1.Valor > truck.infoPaquete2.Valor && truck.infoPaquete1.entregado == false {
 			//
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
@@ -244,9 +244,9 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
 	}
 
-	fmt.Println("Entrega retail \n")
-	fmt.Println("Estado paquete 1: %t", truck.infoPaquete1.entregado)
-	fmt.Println("Estado paquete 1: %t", truck.infoPaquete2.entregado)
+	fmt.Printf("Entrega retail \n")
+	fmt.Printf("Estado paquete 1: %t\n", truck.infoPaquete1.entregado)
+	fmt.Printf("Estado paquete 2: %t\n", truck.infoPaquete2.entregado)
 
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
@@ -319,6 +319,10 @@ func main() {
 	fmt.Scanln(&waitTime)
 
 	for {
+		log.Println("Comienzo de carga")
+		log.Println("Cantidad paquetes camion 1: %v", strconv.Itoa(camion1.cantPaquetes))
+		log.Println("Cantidad paquetes camion 2: %v", strconv.Itoa(camion2.cantPaquetes))
+		log.Println("Cantidad paquetes camion 3: %v", strconv.Itoa(camion3.cantPaquetes))
 		// carga de paquetes
 		if camion1.cantPaquetes == 0 {
 			cargarCamion(conn, camion1, waitTime)
@@ -343,5 +347,6 @@ func main() {
 		if camion3.cantPaquetes != 0 {
 			entregaNormal(conn, camion3)
 		}
+		log.Println("Fin de entrega")
 	}
 }
