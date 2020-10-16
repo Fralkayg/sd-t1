@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
+	"strconv"
 	"time"
 
 	pb "github.com/Fralkayg/sd-t1/Service"
@@ -34,7 +37,7 @@ type infoPaquete struct {
 	Intentos     int32
 	fechaEntrega string
 
-	entregado bool
+	entregado    bool
 	penalizacion int32
 }
 
@@ -50,12 +53,10 @@ func ochentaPorcientoXD() bool {
 
 }
 
-
-
-func generarRegistro(idCamion string, fecha string, paquete infoPaquete){
+func generarRegistro(idCamion string, fecha string, paquete infoPaquete) {
 	CamionFile, err := os.OpenFile("./camion"+idCamion+".csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
-		seguimientoAux, errAux := os.Create("./camion"+idCamion+".csv")
+		seguimientoAux, errAux := os.Create("./camion" + idCamion + ".csv")
 		if errAux != nil {
 			log.Printf("ola")
 		}
@@ -71,10 +72,10 @@ func generarRegistro(idCamion string, fecha string, paquete infoPaquete){
 	fileData = append(fileData, []string{
 		paquete.Id,
 		paquete.Tipo,
-		paquete.Valor,        
-		paquete.Origen,       
-		paquete.Destino,      
-		paquete.Intentos,     
+		paquete.Valor,
+		paquete.Origen,
+		paquete.Destino,
+		paquete.Intentos,
 		paquete.fechaEntrega})
 
 	csvWriter := csv.NewWriter(CamionFile)
@@ -82,7 +83,7 @@ func generarRegistro(idCamion string, fecha string, paquete infoPaquete){
 	// csvWriter.Flush()
 }
 
-func entregaNormal(conn *grpc.ClientConn, truck Camion){
+func entregaNormal(conn *grpc.ClientConn, truck Camion) {
 	var intentosTotales int
 	intentosTotales = 0
 
@@ -90,26 +91,26 @@ func entregaNormal(conn *grpc.ClientConn, truck Camion){
 
 		if truck.infoPaquete1.Valor > truck.infoPaquete2.Valor && truck.infoPaquete1.entregado == false {
 			//
-			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion{
+			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
 				truck.infoPaquete1.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete1.penalizacion += 10
 				}
 			}
 
-			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion && truck.infoPaquete2.entregado == false{
+			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion && truck.infoPaquete2.entregado == false {
 				truck.infoPaquete2.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete2.penalizacion += 10
 				}
 			}
@@ -118,26 +119,26 @@ func entregaNormal(conn *grpc.ClientConn, truck Camion){
 		//pack2 > pack1
 		if truck.infoPaquete2.Valor > truck.infoPaquete1.Valor && truck.infoPaquete2.entregado == false {
 			//
-			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion{
+			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion {
 				truck.infoPaquete2.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete2.penalizacion += 10
 				}
 			}
 
-			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion && truck.infoPaquete1.entregado == false{
+			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion && truck.infoPaquete1.entregado == false {
 				truck.infoPaquete1.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete1.penalizacion += 10
 				}
 			}
@@ -146,16 +147,14 @@ func entregaNormal(conn *grpc.ClientConn, truck Camion){
 		intentosTotales++
 	}
 
+	if truck.infoPaquete1.entregado == false {
+		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete1)
 
-	if truck.infoPaquete1.entregado == false{
-		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete1 )
+	}
 
-	}	
-	
-	if truck.infoPaquete2.entregado == false{
-		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2 )
-	}	
-			
+	if truck.infoPaquete2.entregado == false {
+		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
+	}
 
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
@@ -169,28 +168,28 @@ func entregaRetail(conn *grpc.ClientConn, truck Camion) {
 
 		if truck.infoPaquete1.Valor > truck.infoPaquete2.Valor && truck.infoPaquete1.entregado == false {
 			//
-			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion{
+			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
 				truck.infoPaquete1.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
 					truck.infoPaquete1.entregado = true
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete1.penalizacion += 10
 				}
 			}
 
-			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion && truck.infoPaquete2.entregado == false{
+			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion && truck.infoPaquete2.entregado == false {
 				truck.infoPaquete2.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
 					truck.infoPaquete2.entregado = true
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete2.penalizacion += 10
 				}
 			}
@@ -199,48 +198,47 @@ func entregaRetail(conn *grpc.ClientConn, truck Camion) {
 		//pack2 > pack1
 		if truck.infoPaquete2.Valor > truck.infoPaquete1.Valor && truck.infoPaquete2.entregado == false {
 			//
-			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion{
+			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion {
 				truck.infoPaquete2.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
 					truck.infoPaquete2.entregado = true
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete2.penalizacion += 10
 				}
 			}
 
-			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion && truck.infoPaquete1.entregado == false{
+			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion && truck.infoPaquete1.entregado == false {
 				truck.infoPaquete1.Intentos++
-				if ochentaPorcientoXD() == true{
+				if ochentaPorcientoXD() == true {
 					timestamp = time.Now()
 					truck.infoPaquete1.entregado = true
-					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1 )
+					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
 					cantPaquetes--
 
-				}else{
+				} else {
 					truck.infoPaquete1.penalizacion += 10
 				}
 			}
 
-		
+		}
 		intentosTotales++
 	}
 
-	if truck.infoPaquete1.Tipo == "retail" && truck.infoPaquete2.Tipo == "retail"{
+	if truck.infoPaquete1.Tipo == "retail" && truck.infoPaquete2.Tipo == "retail" {
 		truck.entregaRetail = true
 	}
 
+	if truck.infoPaquete1.entregado == false {
+		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete1)
+	}
 
-	if truck.infoPaquete1.entregado == false{
-		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete1 )
-	}	
-	
-	if truck.infoPaquete2.entregado == false{
-		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2 )
-	}	
+	if truck.infoPaquete2.entregado == false {
+		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
+	}
 
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
@@ -251,31 +249,29 @@ func pedirPaquete(conn *grpc.ClientConn, truck Camion) infoPaquete {
 	c := pb.NewLogisticaServiceClient(conn)
 
 	paquete, errorPaquete := c.SolicitarPaquete(context.Background(), &pb.Camion{
-		Id: truck.Id, 
-		Tipo: truck.Tipo,
-		EntregaRetail: truck.entregaRetail
-	})
+		Id:            truck.Id,
+		Tipo:          truck.Tipo,
+		EntregaRetail: truck.entregaRetail})
 	if errorPaquete != nil {
 		log.Fatalf("Error al recibir paquete desde logistica")
 		return infoPaquete{}
 	}
 	log.Printf("Se recibio exitosamente el paquete. Su ID es: %v", paquete.GetId())
 	infoPaquete := infoPaquete{
-		Id:       paquete.GetId(),
-		Tipo:     paquete.GetTipo(),
-		Valor:    paquete.GetValor(),
-		Origen:   paquete.GetOrigen(),
-		Destino:  paquete.GetDestino(),
-		Intentos: 0,
+		Id:           paquete.GetId(),
+		Tipo:         paquete.GetTipo(),
+		Valor:        paquete.GetValor(),
+		Origen:       paquete.GetOrigen(),
+		Destino:      paquete.GetDestino(),
+		Intentos:     0,
 		penalizacion: 0}
 	truck.cantPaquetes++
 	return infoPaquete
 }
 
-
 func cargarCamion(conn *grpc.ClientConn, truck Camion, waitTime int) {
 	truck.infoPaquete1 = pedirPaquete(conn, truck)
-	if truck.cantPaquetes == 1{
+	if truck.cantPaquetes == 1 {
 		time.Sleep(time.Duration(waitTime) * time.Second)
 		truck.infoPaquete2 = pedirPaquete(conn, truck)
 	}
@@ -313,31 +309,31 @@ func main() {
 	var waitTime int
 	log.Printf("Ingrese el tiempo de espera de 2do paquete: ")
 	fmt.Scanln(&waitTime)
-	
-	for{
+
+	for {
 		// carga de paquetes
-		if camion1.cantPaquetes == 0{
+		if camion1.cantPaquetes == 0 {
 			cargarCamion(conn, camion1)
 			log.Printf("Camion 1 cargado")
 		}
-  		if camion2.cantPaquetes == 0{
-  			cargarCamion(camion2)
-  			log.Printf("Camion 2 cargado")
-  		}
-  		if camion3.cantPaquetes == 0{
-  			cargarCamion(camion3)
-  			log.Printf("Camion 3 cargado")
-  		}
+		if camion2.cantPaquetes == 0 {
+			cargarCamion(camion2)
+			log.Printf("Camion 2 cargado")
+		}
+		if camion3.cantPaquetes == 0 {
+			cargarCamion(camion3)
+			log.Printf("Camion 3 cargado")
+		}
 
-  		// entrega de paquetes
-  		if camion1.cantPaquetes != 0{
+		// entrega de paquetes
+		if camion1.cantPaquetes != 0 {
 			entregaRetail(camion1)
-  		}
-  		if camion2.cantPaquetes != 0{
-  			entregaRetail(camion2)
-  		}
-  		if camion3.cantPaquetes != 0{
-  			entregaNormal(camion3)
-  		}	
-	 }
+		}
+		if camion2.cantPaquetes != 0 {
+			entregaRetail(camion2)
+		}
+		if camion3.cantPaquetes != 0 {
+			entregaNormal(camion3)
+		}
+	}
 }
