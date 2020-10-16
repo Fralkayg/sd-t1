@@ -194,7 +194,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 			paqueteCamion := &pb.PaqueteCamion{
 				Id:    paquete.IDPaquete,
 				Tipo:  paquete.Tipo,
-				Valor: paquete.Valor,
+				Valor: int32(paquete.Valor),
 			}
 			return paqueteCamion, nil
 			//Falta agregar origen y destino
@@ -207,7 +207,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					paqueteCamion := &pb.PaqueteCamion{
 						Id:    paquete.IDPaquete,
 						Tipo:  paquete.Tipo,
-						Valor: paquete.Valor,
+						Valor: int32(paquete.Valor),
 					}
 					return paqueteCamion, nil
 				}
@@ -221,18 +221,18 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 			paqueteCamion := &pb.PaqueteCamion{
 				Id:    paquete.IDPaquete,
 				Tipo:  paquete.Tipo,
-				Valor: paquete.Valor,
+				Valor: int32(paquete.Valor),
 			}
 			return paqueteCamion, nil
 		} else {
 			colaNormal, paquete := dequeue(s.colaNormal)
 			s.colaNormal = colaNormal
 
-			if paquete != "" {
+			if paquete.IDPaquete != "" {
 				paqueteCamion := &pb.PaqueteCamion{
 					Id:    paquete.IDPaquete,
 					Tipo:  paquete.Tipo,
-					Valor: paquete.Valor,
+					Valor: int32(paquete.Valor),
 				}
 				return paqueteCamion, nil
 			}
