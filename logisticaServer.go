@@ -55,14 +55,14 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
 	if ordenPyme.GetPrioritario() == 1 {
-		enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
+		s.colaPrioritario = enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
 			Seguimiento: s.seguimiento,
 			Tipo:        "Prioritario",
 			Valor:       int(ordenPyme.GetValor()),
 			Intentos:    0,
 			Estado:      "En bodega"})
 	} else {
-		enqueue(s.colaNormal, paquete{IDPaquete: ordenPyme.GetId(),
+		s.colaNormal = enqueue(s.colaNormal, paquete{IDPaquete: ordenPyme.GetId(),
 			Seguimiento: s.seguimiento,
 			Tipo:        "Normal",
 			Valor:       int(ordenPyme.GetValor()),
@@ -87,7 +87,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 	s.seguimiento++
 
 	registroOrdenRetail(ordenRetail, s.seguimiento)
-	enqueue(s.colaRetail, paquete{IDPaquete: ordenRetail.GetId(),
+	s.colaRetail = enqueue(s.colaRetail, paquete{IDPaquete: ordenRetail.GetId(),
 		Seguimiento: s.seguimiento,
 		Tipo:        "Retail",
 		Valor:       int(ordenRetail.GetValor()),
@@ -179,10 +179,66 @@ func enqueue(queue []paquete, element paquete) []paquete {
 	return queue
 }
 
-func dequeue(queue []paquete) []paquete {
-	//element := queue[0] // The first element is the one to be dequeued.
+func dequeue(queue []paquete) ([]paquete, paquete) {
+	element := queue[0] // The first element is the one to be dequeued.
 	// fmt.Println("Dequeued:", element)
-	return queue[1:] // Slice off the element once it is dequeued.
+	return queue[1:], element // Slice off the element once it is dequeued.
+}
+
+func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
+	if camion.Tipo == "retail" {
+		colaRetail, paquete := dequeue(s.colaRetail)
+		s.colaRetail = colaRetail
+
+		if paquete.IDPaquete != "" {
+			paqueteCamion := &pb.PaqueteCamion{
+				Id:    paquete.IDPaquete,
+				Tipo:  paquete.Tipo,
+				Valor: int32(paquete.Valor),
+			}
+			return paqueteCamion, nil
+			//Falta agregar origen y destino
+		} else {
+			if camion.EntregaRetail {
+				colaPrioritario, paquete := dequeue(s.colaPrioritario)
+				s.colaPrioritario = colaPrioritario
+
+				if paquete.IDPaquete != "" {
+					paqueteCamion := &pb.PaqueteCamion{
+						Id:    paquete.IDPaquete,
+						Tipo:  paquete.Tipo,
+						Valor: int32(paquete.Valor),
+					}
+					return paqueteCamion, nil
+				}
+			}
+		}
+	} else if camion.Tipo == "normal" {
+		colaPrioritario, paquete := dequeue(s.colaPrioritario)
+		s.colaPrioritario = colaPrioritario
+
+		if paquete.IDPaquete != "" {
+			paqueteCamion := &pb.PaqueteCamion{
+				Id:    paquete.IDPaquete,
+				Tipo:  paquete.Tipo,
+				Valor: int32(paquete.Valor),
+			}
+			return paqueteCamion, nil
+		} else {
+			colaNormal, paquete := dequeue(s.colaNormal)
+			s.colaNormal = colaNormal
+
+			if paquete.IDPaquete != "" {
+				paqueteCamion := &pb.PaqueteCamion{
+					Id:    paquete.IDPaquete,
+					Tipo:  paquete.Tipo,
+					Valor: int32(paquete.Valor),
+				}
+				return paqueteCamion, nil
+			}
+		}
+	}
+	return nil, nil
 }
 
 func main() {
