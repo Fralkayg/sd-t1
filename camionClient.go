@@ -27,12 +27,12 @@ type Camion struct {
 }
 
 type infoPaquete struct {
-	Id           int
+	Id           string
 	Tipo         string
-	Valor        int
+	Valor        int32
 	Origen       string
 	Destino      string
-	Intentos     int
+	Intentos     int32
 	fechaEntrega string
 }
 
@@ -95,13 +95,13 @@ func pedirPaquete(conn *grpc.ClientConn, truck Camion) {
 func camionTest(conn *grpc.ClientConn) infoPaquete {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	paquete, errorPaquete := c.SolicitarPaquete(context.Background(), &pb.Camion{Id: "1", Tipo: "retail", EntregaRetail: false})
+	paquete, errorPaquete := c.SolicitarPaquete(context.Background(), &pb.Camion{Id: 1, Tipo: "retail", EntregaRetail: false})
 	if errorPaquete != nil {
 		log.Fatalf("Error al recibir paquete desde logistica")
-		return nil
+		return infoPaquete{}
 	}
 	log.Printf("Se recibio exitosamente el paquete. Su ID es: %v", strconv.Itoa(int(paquete.GetId())))
-	infoPaquete := &infoPaquete{
+	infoPaquete := infoPaquete{
 		Id:       paquete.GetId(),
 		Tipo:     paquete.GetTipo(),
 		Valor:    paquete.GetValor(),
@@ -132,21 +132,21 @@ func main() {
 		Id:            1,
 		infoPaquete1:  infoPaquete{},
 		infoPaquete2:  infoPaquete{},
-		Paquetes:      0,
+		cantPaquetes:  0,
 		entregaRetail: false}
 	camion2 := &Camion{
 		Tipo:          "retail",
 		Id:            2,
 		infoPaquete1:  infoPaquete{},
 		infoPaquete2:  infoPaquete{},
-		Paquetes:      0,
+		cantPaquetes:  0,
 		entregaRetail: false}
 	camion3 := &Camion{
 		Tipo:          "normal",
 		Id:            3,
 		infoPaquete1:  infoPaquete{},
 		infoPaquete2:  infoPaquete{},
-		Paquetes:      0,
+		cantPaquetes:  0,
 		entregaRetail: false}
 
 	var waitTime int
