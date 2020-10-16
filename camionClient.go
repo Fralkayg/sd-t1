@@ -95,6 +95,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 				truck.infoPaquete1.Intentos++
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
+					truck.infoPaquete1.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
 					truck.cantPaquetes--
 
@@ -107,6 +108,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 				truck.infoPaquete2.Intentos++
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
+					truck.infoPaquete2.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
 					truck.cantPaquetes--
 
@@ -114,15 +116,13 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 					truck.infoPaquete2.penalizacion += 10
 				}
 			}
-		}
-
-		//pack2 > pack1
-		if truck.infoPaquete2.Valor > truck.infoPaquete1.Valor && truck.infoPaquete2.entregado == false {
+		} else if truck.infoPaquete2.Valor > truck.infoPaquete1.Valor && truck.infoPaquete2.entregado == false {
 			//
 			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion {
 				truck.infoPaquete2.Intentos++
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
+					truck.infoPaquete2.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
 					truck.cantPaquetes--
 
@@ -135,6 +135,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 				truck.infoPaquete1.Intentos++
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
+					truck.infoPaquete1.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
 					truck.cantPaquetes--
 
