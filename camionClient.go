@@ -67,7 +67,7 @@ func generarRegistro(idCamion string, fecha string, paquete infoPaquete) {
 
 	var fileData [][]string
 
-	log.Printf("Generando linea en archivo del camion xd")
+	// log.Printf("Generando linea en archivo del camion xd")
 
 	fileData = append(fileData, []string{
 		paquete.Id,
