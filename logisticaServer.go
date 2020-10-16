@@ -3,9 +3,13 @@ package main
 
 import (
 	"context"
+	"encoding/csv"
+	"fmt"
 	"log"
 	"net"
+	"os"
 	"strconv"
+	"time"
 
 	pb "github.com/Fralkayg/sd-t1/Service"
 	"google.golang.org/grpc"
@@ -17,9 +21,20 @@ const (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	seguimientoPyme   int
-	seguimientoRetail int
-	lock              bool
+	seguimiento     int
+	lock            bool
+	colaRetail      []paquete
+	colaPrioritario []paquete
+	colaNormal      []paquete
+}
+
+type paquete struct {
+	IDPaquete   string
+	Seguimiento int
+	Tipo        string
+	Valor       int
+	Intentos    int
+	Estado      string
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -36,14 +51,30 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	s.lock = true
 
 	log.Printf("Id orden: %v", ordenPyme.GetId())
-	idSeguimiento, err := strconv.Atoi(ordenPyme.GetId())
-	if err != nil {
-		log.Printf("Ocurrio un error al hacer la transformación de datos.")
+	s.seguimiento++
+
+	registroOrdenPyme(ordenPyme, s.seguimiento)
+	if ordenPyme.GetPrioritario() == 1 {
+		enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
+			Seguimiento: s.seguimiento,
+			Tipo:        "Prioritario",
+			Valor:       int(ordenPyme.GetValor()),
+			Intentos:    0,
+			Estado:      "En bodega"})
+	} else {
+		enqueue(s.colaNormal, paquete{IDPaquete: ordenPyme.GetId(),
+			Seguimiento: s.seguimiento,
+			Tipo:        "Normal",
+			Valor:       int(ordenPyme.GetValor()),
+			Intentos:    0,
+			Estado:      "En bodega"})
 	}
+	fmt.Println("Cola prioritario: ", s.colaPrioritario)
+	fmt.Println("Cola normal: ", s.colaNormal)
 	log.Printf("Aqui deberia estar generandose la orden de Pyme")
 
 	s.lock = false
-	return &pb.SeguimientoPyme{Id: int32(idSeguimiento)}, nil
+	return &pb.SeguimientoPyme{Id: int32(s.seguimiento)}, nil
 }
 
 func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRetail) (*pb.SeguimientoRetail, error) {
@@ -53,15 +84,105 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 	s.lock = true
 
 	log.Printf("Id orden: %v", ordenRetail.GetId())
-	idSeguimiento, err := strconv.Atoi(ordenRetail.GetId())
-	if err != nil {
-		log.Printf("Ocurrio un error al hacer la transformación de datos.")
-	}
+	s.seguimiento++
+
+	registroOrdenRetail(ordenRetail, s.seguimiento)
+	enqueue(s.colaRetail, paquete{IDPaquete: ordenRetail.GetId(),
+		Seguimiento: s.seguimiento,
+		Tipo:        "Retail",
+		Valor:       int(ordenRetail.GetValor()),
+		Intentos:    0,
+		Estado:      "En bodega"})
 
 	log.Printf("Aqui deberia estar generandose la orden Retail")
+	fmt.Println("Cola retail: ", s.colaRetail)
 
 	s.lock = false
-	return &pb.SeguimientoRetail{Id: int32(idSeguimiento)}, nil
+	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
+}
+
+func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
+	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		seguimientoAux, errAux := os.Create("./registro.csv")
+		if errAux != nil {
+			log.Printf("wea")
+		}
+		seguimientoFile = seguimientoAux
+		log.Printf("Hubo un error al abrir/crear archivo seguimiento. Tipo: Retail")
+	}
+
+	defer seguimientoFile.Close()
+
+	timestamp := time.Now()
+	timeString := timestamp.Format("2020-01-01 00:00")
+
+	var fileData [][]string
+
+	log.Printf("Generando linea en archivo registro.csv, Retail")
+
+	fileData = append(fileData, []string{timeString,
+		strconv.Itoa(idSeguimiento),
+		"retail",
+		ordenRetail.GetProducto(),
+		strconv.Itoa(int(ordenRetail.GetValor())),
+		ordenRetail.GetOrigen(),
+		ordenRetail.GetDestino(),
+		strconv.Itoa(idSeguimiento)})
+
+	csvWriter := csv.NewWriter(seguimientoFile)
+	csvWriter.WriteAll(fileData)
+	// csvWriter.Flush()
+}
+
+func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
+	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		seguimientoAux, errAux := os.Create("./registro.csv")
+		seguimientoFile = seguimientoAux
+		if errAux != nil {
+			log.Printf("wea2")
+		}
+		log.Printf("Hubo un error al abrir/crear archivo seguimiento. Tipo: Retail")
+	}
+
+	defer seguimientoFile.Close()
+
+	timestamp := time.Now()
+
+	var tipoPyme string
+	if ordenPyme.GetPrioritario() == 1 {
+		tipoPyme = "prioritario"
+	} else {
+		tipoPyme = "normal"
+	}
+
+	log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
+
+	var fileData [][]string
+	fileData = append(fileData, []string{timestamp.Format("2020-01-01 00:00"),
+		strconv.Itoa(idSeguimiento),
+		tipoPyme,
+		ordenPyme.GetProducto(),
+		strconv.Itoa(int(ordenPyme.GetValor())),
+		ordenPyme.GetOrigen(),
+		ordenPyme.GetDestino(),
+		strconv.Itoa(idSeguimiento)})
+
+	csvWriter := csv.NewWriter(seguimientoFile)
+	csvWriter.WriteAll(fileData)
+}
+
+func enqueue(queue []paquete, element paquete) []paquete {
+	queue = append(queue, element) // Simply append to enqueue.
+	// fmt.Println("Enqueued:", element)
+	return queue
+}
+
+func dequeue(queue []paquete) []paquete {
+	//element := queue[0] // The first element is the one to be dequeued.
+	// fmt.Println("Dequeued:", element)
+	return queue[1:] // Slice off the element once it is dequeued.
 }
 
 func main() {
@@ -74,8 +195,7 @@ func main() {
 	s := server{}
 
 	//Inicializacion variables servidor logistica.
-	s.seguimientoPyme = 0
-	s.seguimientoRetail = 0
+	s.seguimiento = 0
 	s.lock = false
 
 	pb.RegisterLogisticaServiceServer(grpcServer, &s)
