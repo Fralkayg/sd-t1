@@ -185,6 +185,58 @@ func dequeue(queue []paquete) ([]paquete, paquete) {
 	return queue[1:], element // Slice off the element once it is dequeued.
 }
 
+func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
+	if camion.Tipo == "retail" {
+		s.colaRetail, paquete := dequeue(s.colaRetail)
+
+		if paquete != nil {
+			paqueteCamion := paqueteCamion{
+				Id: paquete.IDPaquete,
+				Tipo: paquete.Tipo,
+				Valor: paquete.Valor,
+			}
+			return paqueteCamion, nil
+			//Falta agregar origen y destino
+		}else{
+			if camion.EntregaRetail {
+				s.colaPrioritario, paquete := dequeue(s.colaPrioritario)
+
+				if paquete != nil {
+					paqueteCamion := paqueteCamion{
+						Id: paquete.IDPaquete,
+						Tipo: paquete.Tipo,
+						Valor: paquete.Valor,
+					}
+					return paqueteCamion, nil
+				}
+			}
+		}
+	}else if camion.Tipo == "normal" {
+		s.colaPrioritario, paquete := dequeue(s.colaPrioritario)
+
+		if paquete != nil {
+			paqueteCamion := paqueteCamion{
+				Id: paquete.IDPaquete,
+				Tipo: paquete.Tipo,
+				Valor: paquete.Valor,
+			}
+			return paqueteCamion, nil
+		}else{
+			s.colaNormal, paquete := dequeue(s.colaNormal)
+
+			if paquete != nil {
+				paqueteCamion := paqueteCamion{
+					Id: paquete.IDPaquete,
+					Tipo: paquete.Tipo,
+					Valor: paquete.Valor,
+				}
+				return paqueteCamion, nil
+			}
+		}
+	}
+	return nil, nil
+}
+
 func main() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {

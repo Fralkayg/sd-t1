@@ -7,6 +7,7 @@ service LogisticaService {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   rpc GenerarOrdenPyme (OrdenPyme) returns (SeguimientoPyme){}
   rpc GenerarOrdenRetail (OrdenRetail) returns (SeguimientoRetail){}
+  rpc SolicitarPaquete (Camion) returns (PaqueteCamion){}
 }
 
 message OrdenPyme {
@@ -32,6 +33,20 @@ message OrdenRetail {
 
 message SeguimientoRetail{
   int32 Id = 1;
+}
+
+message Camion{
+  int Id = 1;
+  string Tipo = 2;
+  bool EntregaRetail = 3;
+}
+
+message PaqueteCamion{
+  string Id = 1;
+  string Tipo = 2;
+  int Valor = 3;
+  string Origen = 4;
+  string Destino = 5;
 }
 
 
