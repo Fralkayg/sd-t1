@@ -36,6 +36,8 @@ type paquete struct {
 	Valor       int
 	Intentos    int
 	Estado      string
+	Origen      string
+	Destino     string
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -61,6 +63,8 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Tipo:        "Prioritario",
 			Valor:       int(ordenPyme.GetValor()),
 			Intentos:    0,
+			Origen:      ordenPyme.GetOrigen(),
+			Destino:     ordenPyme.GetDestino(),
 			Estado:      "En bodega"})
 	} else {
 		s.colaNormal = enqueue(s.colaNormal, paquete{IDPaquete: ordenPyme.GetId(),
@@ -68,6 +72,8 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Tipo:        "Normal",
 			Valor:       int(ordenPyme.GetValor()),
 			Intentos:    0,
+			Origen: ordenPyme.GetOrigen(),
+			Destino: ordenPyme.GetDestino()
 			Estado:      "En bodega"})
 	}
 	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
@@ -93,6 +99,8 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 		Tipo:        "Retail",
 		Valor:       int(ordenRetail.GetValor()),
 		Intentos:    0,
+		Origen: ordenRetail.GetOrigen(),
+		Destino: ordenRetail.GetDestino(),
 		Estado:      "En bodega"})
 
 	// log.Printf("Aqui deberia estar generandose la orden Retail")
@@ -196,6 +204,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				paqueteCamion := &pb.PaqueteCamion{
 					Id:    paquete.IDPaquete,
 					Tipo:  paquete.Tipo,
+					Origen: paquete.Origen,
+					Destino: paquete.Destino,
 					Valor: int32(paquete.Valor),
 				}
 				fmt.Println("Cola retail: ", s.colaRetail)
@@ -212,6 +222,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 						paqueteCamion := &pb.PaqueteCamion{
 							Id:    paquete.IDPaquete,
 							Tipo:  paquete.Tipo,
+							Origen: paquete.Origen,
+							Destino: paquete.Destino,
 							Valor: int32(paquete.Valor),
 						}
 						fmt.Println("Cola prioritario: ", s.colaPrioritario)
@@ -229,6 +241,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				paqueteCamion := &pb.PaqueteCamion{
 					Id:    paquete.IDPaquete,
 					Tipo:  paquete.Tipo,
+					Origen: paquete.Origen,
+					Destino: paquete.Destino,
 					Valor: int32(paquete.Valor),
 				}
 				fmt.Println("Cola prioritario: ", s.colaPrioritario)
@@ -245,6 +259,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				paqueteCamion := &pb.PaqueteCamion{
 					Id:    paquete.IDPaquete,
 					Tipo:  paquete.Tipo,
+					Origen: paquete.Origen,
+					Destino: paquete.Destino,
 					Valor: int32(paquete.Valor),
 				}
 				fmt.Println("Cola normal: ", s.colaNormal)

@@ -49,7 +49,6 @@ message PaqueteCamion{
   string Destino = 5;
 }
 
-
 message HelloRequest {
   string name = 1;
 }
