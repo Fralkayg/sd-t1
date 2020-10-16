@@ -228,7 +228,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 		intentosTotales++
 	}
 	fmt.Printf("Antes de cambiar. Camion: %v. Entrega retail: %t", strconv.Itoa(truck.Id), truck.entregaRetail)
-	if truck.infoPaquete1.Tipo == "retail" && truck.infoPaquete2.Tipo == "retail" {
+	if truck.infoPaquete1.Tipo == "Retail" && truck.infoPaquete2.Tipo == "Retail" {
 		truck.entregaRetail = true
 	}
 	fmt.Printf("Despues de cambiar. Camion: %v. Entrega retail: %t", strconv.Itoa(truck.Id), truck.entregaRetail)
@@ -286,21 +286,21 @@ func main() {
 	defer conn.Close()
 
 	camion1 := &Camion{
-		Tipo:          "retail",
+		Tipo:          "Retail",
 		Id:            1,
 		infoPaquete1:  infoPaquete{},
 		infoPaquete2:  infoPaquete{},
 		cantPaquetes:  0,
 		entregaRetail: false}
 	camion2 := &Camion{
-		Tipo:          "retail",
+		Tipo:          "Retail",
 		Id:            2,
 		infoPaquete1:  infoPaquete{},
 		infoPaquete2:  infoPaquete{},
 		cantPaquetes:  0,
 		entregaRetail: false}
 	camion3 := &Camion{
-		Tipo:          "normal",
+		Tipo:          "Normal",
 		Id:            3,
 		infoPaquete1:  infoPaquete{},
 		infoPaquete2:  infoPaquete{},
