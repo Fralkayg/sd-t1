@@ -244,7 +244,7 @@ func entregaRetail(conn *grpc.ClientConn, truck Camion) {
 	truck.infoPaquete2 = infoPaquete{}
 }
 
-func pedirPaquete(conn *grpc.ClientConn, truck Camion) infoPaquete {
+func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 	//weas raras
 	c := pb.NewLogisticaServiceClient(conn)
 
@@ -270,10 +270,10 @@ func pedirPaquete(conn *grpc.ClientConn, truck Camion) infoPaquete {
 }
 
 func cargarCamion(conn *grpc.ClientConn, truck Camion, waitTime int) {
-	truck.infoPaquete1 = pedirPaquete(conn, truck)
+	truck.infoPaquete1 = pedirPaquete(conn, &truck)
 	if truck.cantPaquetes == 1 {
 		time.Sleep(time.Duration(waitTime) * time.Second)
-		truck.infoPaquete2 = pedirPaquete(conn, truck)
+		truck.infoPaquete2 = pedirPaquete(conn, &truck)
 	}
 }
 
