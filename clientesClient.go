@@ -138,6 +138,7 @@ func main() {
 	opcion = 0
 
 	for (cantPedidosRetail + cantPedidosPyme) < 51 { //while algo pase xd 50 pedidos maybe?
+		rand.Seed(time.Now().UnixNano())
 		opcion = rand.Intn(3)
 		opcionAux := strconv.Itoa(opcion)
 
