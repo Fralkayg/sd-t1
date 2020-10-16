@@ -187,47 +187,51 @@ func dequeue(queue []paquete) ([]paquete, paquete) {
 
 func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
 	if camion.Tipo == "retail" {
-		s.colaRetail, paquete := dequeue(s.colaRetail)
+		colaRetail, paquete := dequeue(s.colaRetail)
+		s.colaRetail = colaRetail
 
-		if paquete != nil {
-			paqueteCamion := paqueteCamion{
-				Id: paquete.IDPaquete,
-				Tipo: paquete.Tipo,
+		if paquete.IDPaquete != "" {
+			paqueteCamion := &pb.PaqueteCamion{
+				Id:    paquete.IDPaquete,
+				Tipo:  paquete.Tipo,
 				Valor: paquete.Valor,
 			}
 			return paqueteCamion, nil
 			//Falta agregar origen y destino
-		}else{
+		} else {
 			if camion.EntregaRetail {
-				s.colaPrioritario, paquete := dequeue(s.colaPrioritario)
+				colaPrioritario, paquete := dequeue(s.colaPrioritario)
+				s.colaPrioritario = colaPrioritario
 
-				if paquete != nil {
-					paqueteCamion := paqueteCamion{
-						Id: paquete.IDPaquete,
-						Tipo: paquete.Tipo,
+				if paquete.IDPaquete != "" {
+					paqueteCamion := &pb.PaqueteCamion{
+						Id:    paquete.IDPaquete,
+						Tipo:  paquete.Tipo,
 						Valor: paquete.Valor,
 					}
 					return paqueteCamion, nil
 				}
 			}
 		}
-	}else if camion.Tipo == "normal" {
-		s.colaPrioritario, paquete := dequeue(s.colaPrioritario)
+	} else if camion.Tipo == "normal" {
+		colaPrioritario, paquete := dequeue(s.colaPrioritario)
+		s.colaPrioritario = colaPrioritario
 
-		if paquete != nil {
-			paqueteCamion := paqueteCamion{
-				Id: paquete.IDPaquete,
-				Tipo: paquete.Tipo,
+		if paquete.IDPaquete != "" {
+			paqueteCamion := &pb.PaqueteCamion{
+				Id:    paquete.IDPaquete,
+				Tipo:  paquete.Tipo,
 				Valor: paquete.Valor,
 			}
 			return paqueteCamion, nil
-		}else{
-			s.colaNormal, paquete := dequeue(s.colaNormal)
+		} else {
+			colaNormal, paquete := dequeue(s.colaNormal)
+			s.colaNormal = colaNormal
 
-			if paquete != nil {
-				paqueteCamion := paqueteCamion{
-					Id: paquete.IDPaquete,
-					Tipo: paquete.Tipo,
+			if paquete != "" {
+				paqueteCamion := &pb.PaqueteCamion{
+					Id:    paquete.IDPaquete,
+					Tipo:  paquete.Tipo,
 					Valor: paquete.Valor,
 				}
 				return paqueteCamion, nil
