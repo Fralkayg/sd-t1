@@ -187,7 +187,7 @@ func dequeue(queue []paquete) ([]paquete, paquete) {
 }
 
 func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
-	fmt.Printf("Camion: %v. Entrega retail: %t", strconv.Itoa(int(camion.GetId())), camion.GetEntregaRetail())
+	fmt.Printf("Camion: %v. Entrega retail: %t\n", strconv.Itoa(int(camion.GetId())), camion.GetEntregaRetail())
 	if camion.GetTipo() == "Retail" {
 		if len(s.colaRetail) > 0 {
 			colaRetail, paquete := dequeue(s.colaRetail)
