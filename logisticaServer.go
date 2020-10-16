@@ -55,7 +55,7 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
 	if ordenPyme.GetPrioritario() == 1 {
-		s.colaprioritario = enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
+		s.colaPrioritario = enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
 			Seguimiento: s.seguimiento,
 			Tipo:        "Prioritario",
 			Valor:       int(ordenPyme.GetValor()),
