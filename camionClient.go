@@ -227,10 +227,11 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 		}
 		intentosTotales++
 	}
-
+	fmt.Printf("Antes de cambiar. Camion: %v. Entrega retail: %t", strconv.Itoa(truck.Id), truck.entregaRetail)
 	if truck.infoPaquete1.Tipo == "retail" && truck.infoPaquete2.Tipo == "retail" {
 		truck.entregaRetail = true
 	}
+	fmt.Printf("Despues de cambiar. Camion: %v. Entrega retail: %t", strconv.Itoa(truck.Id), truck.entregaRetail)
 
 	if truck.infoPaquete1.entregado == false {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete1)
