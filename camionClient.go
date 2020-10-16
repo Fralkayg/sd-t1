@@ -83,7 +83,7 @@ func generarRegistro(idCamion string, fecha string, paquete infoPaquete) {
 	// csvWriter.Flush()
 }
 
-func entregaNormal(conn *grpc.ClientConn, truck Camion) {
+func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 	var intentosTotales int
 	intentosTotales = 0
 
@@ -160,7 +160,7 @@ func entregaNormal(conn *grpc.ClientConn, truck Camion) {
 	truck.infoPaquete2 = infoPaquete{}
 }
 
-func entregaRetail(conn *grpc.ClientConn, truck Camion) {
+func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 	var intentosTotales int
 	intentosTotales = 0
 
@@ -327,13 +327,13 @@ func main() {
 
 		// entrega de paquetes
 		if camion1.cantPaquetes != 0 {
-			entregaRetail(conn, *camion1)
+			entregaRetail(conn, camion1)
 		}
 		if camion2.cantPaquetes != 0 {
-			entregaRetail(conn, *camion2)
+			entregaRetail(conn, camion2)
 		}
 		if camion3.cantPaquetes != 0 {
-			entregaNormal(conn, *camion3)
+			entregaNormal(conn, camion3)
 		}
 	}
 }
