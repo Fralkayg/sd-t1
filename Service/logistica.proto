@@ -36,7 +36,7 @@ message SeguimientoRetail{
 }
 
 message Camion{
-  int Id = 1;
+  int32 Id = 1;
   string Tipo = 2;
   bool EntregaRetail = 3;
 }
@@ -44,7 +44,7 @@ message Camion{
 message PaqueteCamion{
   string Id = 1;
   string Tipo = 2;
-  int Valor = 3;
+  int32 Valor = 3;
   string Origen = 4;
   string Destino = 5;
 }
