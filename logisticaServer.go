@@ -70,9 +70,9 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Intentos:    0,
 			Estado:      "En bodega"})
 	}
-	fmt.Println("Cola prioritario: ", s.colaPrioritario)
-	fmt.Println("Cola normal: ", s.colaNormal)
-	log.Printf("Aqui deberia estar generandose la orden de Pyme")
+	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
+	// fmt.Println("Cola normal: ", s.colaNormal)
+	// log.Printf("Aqui deberia estar generandose la orden de Pyme")
 
 	s.lock = false
 	return &pb.SeguimientoPyme{Id: int32(s.seguimiento)}, nil
@@ -95,8 +95,8 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 		Intentos:    0,
 		Estado:      "En bodega"})
 
-	log.Printf("Aqui deberia estar generandose la orden Retail")
-	fmt.Println("Cola retail: ", s.colaRetail)
+	// log.Printf("Aqui deberia estar generandose la orden Retail")
+	// fmt.Println("Cola retail: ", s.colaRetail)
 
 	s.lock = false
 	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
@@ -187,7 +187,6 @@ func dequeue(queue []paquete) ([]paquete, paquete) {
 }
 
 func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
-	fmt.Printf("Camion: %v. Entrega retail: %t\n", strconv.Itoa(int(camion.GetId())), camion.GetEntregaRetail())
 	if camion.GetTipo() == "Retail" {
 		if len(s.colaRetail) > 0 {
 			colaRetail, paquete := dequeue(s.colaRetail)
@@ -199,6 +198,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Tipo:  paquete.Tipo,
 					Valor: int32(paquete.Valor),
 				}
+				fmt.Println("Cola retail: ", s.colaRetail)
 				return paqueteCamion, nil
 				//Falta agregar origen y destino
 			}
@@ -214,6 +214,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 							Tipo:  paquete.Tipo,
 							Valor: int32(paquete.Valor),
 						}
+						fmt.Println("Cola prioritario: ", s.colaPrioritario)
 						return paqueteCamion, nil
 					}
 				}
@@ -230,6 +231,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Tipo:  paquete.Tipo,
 					Valor: int32(paquete.Valor),
 				}
+				fmt.Println("Cola prioritario: ", s.colaPrioritario)
 				return paqueteCamion, nil
 
 			}
@@ -245,6 +247,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Tipo:  paquete.Tipo,
 					Valor: int32(paquete.Valor),
 				}
+				fmt.Println("Cola normal: ", s.colaNormal)
 				return paqueteCamion, nil
 			}
 		}
