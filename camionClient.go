@@ -156,6 +156,10 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
 	}
 
+	fmt.Println("Entrega normal \n")
+	fmt.Println("Estado paquete 1: %t", truck.infoPaquete1.entregado)
+	fmt.Println("Estado paquete 1: %t", truck.infoPaquete2.entregado)
+
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
 }
@@ -239,6 +243,10 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 	if truck.infoPaquete2.entregado == false {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
 	}
+
+	fmt.Println("Entrega retail \n")
+	fmt.Println("Estado paquete 1: %t", truck.infoPaquete1.entregado)
+	fmt.Println("Estado paquete 1: %t", truck.infoPaquete2.entregado)
 
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
