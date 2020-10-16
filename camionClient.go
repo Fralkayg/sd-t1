@@ -142,7 +142,7 @@ func entregaNormal(conn *grpc.ClientConn, truck Camion){
 				}
 			}
 
-		
+		}
 		intentosTotales++
 	}
 
