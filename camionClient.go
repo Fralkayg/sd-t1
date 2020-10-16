@@ -262,7 +262,7 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 		Tipo:          truck.Tipo,
 		EntregaRetail: truck.entregaRetail})
 	if errorPaquete != nil {
-		log.Fatalf("Error al recibir paquete desde logistica")
+		log.Println("Error al recibir paquete desde logistica")
 		return infoPaquete{}
 	}
 	log.Printf("Se recibio exitosamente el paquete. Su ID es: %v", paquete.GetId())
