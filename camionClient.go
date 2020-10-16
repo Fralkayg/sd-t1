@@ -70,13 +70,12 @@ func generarRegistro(idCamion string, fecha string, paquete infoPaquete){
 
 	fileData = append(fileData, []string{
 		paquete.Id,
-		paquete.Tipo
-		paquete.Valor        
-		paquete.Origen       
-		paquete.Destino      
-		paquete.Intentos     
-		paquete.fechaEntrega 
-		})
+		paquete.Tipo,
+		paquete.Valor,        
+		paquete.Origen,       
+		paquete.Destino,      
+		paquete.Intentos,     
+		paquete.fechaEntrega})
 
 	csvWriter := csv.NewWriter(CamionFile)
 	csvWriter.WriteAll(fileData)
