@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"strconv"
 	"time"
 
 	pb "github.com/Fralkayg/sd-t1/Service"
@@ -100,7 +99,7 @@ func camionTest(conn *grpc.ClientConn) infoPaquete {
 		log.Fatalf("Error al recibir paquete desde logistica")
 		return infoPaquete{}
 	}
-	log.Printf("Se recibio exitosamente el paquete. Su ID es: %v", strconv.Itoa(int(paquete.GetId())))
+	log.Printf("Se recibio exitosamente el paquete. Su ID es: %v", paquete.GetId())
 	infoPaquete := infoPaquete{
 		Id:       paquete.GetId(),
 		Tipo:     paquete.GetTipo(),
