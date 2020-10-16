@@ -160,7 +160,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 	fmt.Printf("Entrega normal \n")
 	fmt.Printf("Estado paquete 1: %t\n", truck.infoPaquete1.entregado)
 	fmt.Printf("Estado paquete 2: %t\n", truck.infoPaquete2.entregado)
-
+	truck.cantPaquetes = 0
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
 }
@@ -248,7 +248,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 	fmt.Printf("Entrega retail \n")
 	fmt.Printf("Estado paquete 1: %t\n", truck.infoPaquete1.entregado)
 	fmt.Printf("Estado paquete 2: %t\n", truck.infoPaquete2.entregado)
-
+	truck.cantPaquetes = 0
 	truck.infoPaquete1 = infoPaquete{}
 	truck.infoPaquete2 = infoPaquete{}
 }
