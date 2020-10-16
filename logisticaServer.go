@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -187,44 +188,53 @@ func dequeue(queue []paquete) ([]paquete, paquete) {
 
 func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
 	if camion.Tipo == "retail" {
-		colaRetail, paquete := dequeue(s.colaRetail)
-		s.colaRetail = colaRetail
+		if len(s.colaRetail) > 0 {
+			colaRetail, paquete := dequeue(s.colaRetail)
+			s.colaRetail = colaRetail
 
-		if paquete.IDPaquete != "" {
-			paqueteCamion := &pb.PaqueteCamion{
-				Id:    paquete.IDPaquete,
-				Tipo:  paquete.Tipo,
-				Valor: int32(paquete.Valor),
+			if paquete.IDPaquete != "" {
+				paqueteCamion := &pb.PaqueteCamion{
+					Id:    paquete.IDPaquete,
+					Tipo:  paquete.Tipo,
+					Valor: int32(paquete.Valor),
+				}
+				return paqueteCamion, nil
+				//Falta agregar origen y destino
 			}
-			return paqueteCamion, nil
-			//Falta agregar origen y destino
 		} else {
 			if camion.EntregaRetail {
-				colaPrioritario, paquete := dequeue(s.colaPrioritario)
-				s.colaPrioritario = colaPrioritario
+				if len(s.colaPrioritario) > 0 {
+					colaPrioritario, paquete := dequeue(s.colaPrioritario)
+					s.colaPrioritario = colaPrioritario
 
-				if paquete.IDPaquete != "" {
-					paqueteCamion := &pb.PaqueteCamion{
-						Id:    paquete.IDPaquete,
-						Tipo:  paquete.Tipo,
-						Valor: int32(paquete.Valor),
+					if paquete.IDPaquete != "" {
+						paqueteCamion := &pb.PaqueteCamion{
+							Id:    paquete.IDPaquete,
+							Tipo:  paquete.Tipo,
+							Valor: int32(paquete.Valor),
+						}
+						return paqueteCamion, nil
 					}
-					return paqueteCamion, nil
 				}
 			}
 		}
 	} else if camion.Tipo == "normal" {
-		colaPrioritario, paquete := dequeue(s.colaPrioritario)
-		s.colaPrioritario = colaPrioritario
+		if len(s.colaPrioritario) > 0 {
+			colaPrioritario, paquete := dequeue(s.colaPrioritario)
+			s.colaPrioritario = colaPrioritario
 
-		if paquete.IDPaquete != "" {
-			paqueteCamion := &pb.PaqueteCamion{
-				Id:    paquete.IDPaquete,
-				Tipo:  paquete.Tipo,
-				Valor: int32(paquete.Valor),
+			if paquete.IDPaquete != "" {
+				paqueteCamion := &pb.PaqueteCamion{
+					Id:    paquete.IDPaquete,
+					Tipo:  paquete.Tipo,
+					Valor: int32(paquete.Valor),
+				}
+				return paqueteCamion, nil
+
 			}
-			return paqueteCamion, nil
-		} else {
+
+		} else if len(s.colaNormal) > 0 {
+
 			colaNormal, paquete := dequeue(s.colaNormal)
 			s.colaNormal = colaNormal
 
@@ -238,7 +248,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 			}
 		}
 	}
-	return nil, nil
+	return &pb.PaqueteCamion{}, errors.New("Error al entregar paquete")
 }
 
 func main() {
