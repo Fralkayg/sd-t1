@@ -129,6 +129,10 @@ func main() {
 	log.Printf("Ingrese el tiempo entre ordenes del cliente:")
 	fmt.Scanln(&periodo)
 
+	var comp int
+	log.Printf("Seleccione el comportamiento. PYME(0) o Retail(1). (0/1):")
+	fmt.Scanln(&comp)
+
 	var codigoSeguimiento [50]int
 	var cantPedidosRetail int
 	var cantPedidosPyme int
@@ -143,7 +147,7 @@ func main() {
 		opcionAux := strconv.Itoa(opcion)
 
 		log.Printf("Opcion: %v", opcionAux)
-		if opcion == 0 {
+		if opcion == 0 && comp == 0{
 			// orden pyme
 			log.Printf("Entro bien en orden PYME")
 			var seguimientoOrden int
@@ -159,7 +163,7 @@ func main() {
 			// log.Printf("Orden seguimiento PYME: %v", strconv.Itoa(seguimientoOrden))
 			// cantPedidosPyme++
 
-		} else if opcion == 1 {
+		} else if opcion == 1 && comp == 1{
 			// orden retail
 			log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
