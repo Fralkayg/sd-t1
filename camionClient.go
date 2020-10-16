@@ -249,7 +249,7 @@ func pedirPaquete(conn *grpc.ClientConn, truck Camion) infoPaquete {
 	c := pb.NewLogisticaServiceClient(conn)
 
 	paquete, errorPaquete := c.SolicitarPaquete(context.Background(), &pb.Camion{
-		Id:            truck.Id,
+		Id:            int32(truck.Id),
 		Tipo:          truck.Tipo,
 		EntregaRetail: truck.entregaRetail})
 	if errorPaquete != nil {
@@ -313,27 +313,27 @@ func main() {
 	for {
 		// carga de paquetes
 		if camion1.cantPaquetes == 0 {
-			cargarCamion(conn, camion1)
+			cargarCamion(conn, camion1, waitTime)
 			log.Printf("Camion 1 cargado")
 		}
 		if camion2.cantPaquetes == 0 {
-			cargarCamion(camion2)
+			cargarCamion(conn, camion2, waitTime)
 			log.Printf("Camion 2 cargado")
 		}
 		if camion3.cantPaquetes == 0 {
-			cargarCamion(camion3)
+			cargarCamion(conn, camion3, waitTime)
 			log.Printf("Camion 3 cargado")
 		}
 
 		// entrega de paquetes
 		if camion1.cantPaquetes != 0 {
-			entregaRetail(camion1)
+			entregaRetail(conn, camion1)
 		}
 		if camion2.cantPaquetes != 0 {
-			entregaRetail(camion2)
+			entregaRetail(conn, camion2)
 		}
 		if camion3.cantPaquetes != 0 {
-			entregaNormal(camion3)
+			entregaNormal(conn, camion3)
 		}
 	}
 }
