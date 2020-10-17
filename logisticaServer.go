@@ -67,7 +67,7 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
 
-	s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+	s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
 		IDPaquete: ordenPyme.GetId(),
 		Estado: "En bodega",
 		IDCamion: 0,
@@ -96,7 +96,7 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
 	// fmt.Println("Cola normal: ", s.colaNormal)
 	// log.Printf("Aqui deberia estar generandose la orden de Pyme")
-	log.Printf(s.seguimientoPaquete)
+	log.Printf(s.seguimientoPaquetes)
 	
 	s.lock = false
 	return &pb.SeguimientoPyme{Id: int32(s.seguimiento)}, nil
@@ -113,7 +113,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 
 	registroOrdenRetail(ordenRetail, s.seguimiento)
 
-	s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+	s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
 		IDPaquete: ordenRetail.GetId(),
 		Estado: "En bodega",
 		IDCamion: 0,
@@ -131,7 +131,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 
 	// log.Printf("Aqui deberia estar generandose la orden Retail")
 	// fmt.Println("Cola retail: ", s.colaRetail)
-	log.Printf(s.seguimientoPaquete)
+	log.Printf(s.seguimientoPaquetes)
 
 	s.lock = false
 	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
@@ -236,16 +236,16 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Valor: int32(paquete.Valor),
 				}
 
-				index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+				index, _, err := Find(s.seguimientoPaquetes, paqueteCamion)
 
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				}else {
-					s.seguimientoPaquete[index].Estado = "En camino"
-					s.seguimientoPaquete[index].IDCamion = camion.Id
+					s.seguimientoPaquetes[index].Estado = "En camino"
+					s.seguimientoPaquetes[index].IDCamion = camion.Id
 				}
 
-				// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+				// s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
 				// 	IDPaquete: paquete.IDPaquete,
 				// 	Estado: "En camino",
 				// 	IDCamion: camion.Id,
@@ -271,16 +271,16 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 							Valor: int32(paquete.Valor),
 						}
 
-						index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+						index, _, err := Find(s.seguimientoPaquetes, paqueteCamion)
 
 						if err != nil {
 							log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 						}else {
-							s.seguimientoPaquete[index].Estado = "En camino"
-							s.seguimientoPaquete[index].IDCamion = camion.Id
+							s.seguimientoPaquetes[index].Estado = "En camino"
+							s.seguimientoPaquetes[index].IDCamion = camion.Id
 						}
 
-						// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+						// s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
 						// 	IDPaquete: paquete.IDPaquete,
 						// 	Estado: "En camino",
 						// 	IDCamion: camion.Id,
@@ -308,16 +308,16 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Valor: int32(paquete.Valor),
 				}
 
-				index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+				index, _, err := Find(s.seguimientoPaquetes, paqueteCamion)
 
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				}else {
-					s.seguimientoPaquete[index].Estado = "En camino"
-					s.seguimientoPaquete[index].IDCamion = camion.Id
+					s.seguimientoPaquetes[index].Estado = "En camino"
+					s.seguimientoPaquetes[index].IDCamion = camion.Id
 				}
 
-				// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+				// s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
 				// 	IDPaquete: paquete.IDPaquete,
 				// 	Estado: "En camino",
 				// 	IDCamion: camion.Id,
@@ -344,16 +344,16 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Valor: int32(paquete.Valor),
 				}
 
-				index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+				index, _, err := Find(s.seguimientoPaquetes, paqueteCamion)
 
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				}else {
-					s.seguimientoPaquete[index].Estado = "En camino"
-					s.seguimientoPaquete[index].IDCamion = camion.Id
+					s.seguimientoPaquetes[index].Estado = "En camino"
+					s.seguimientoPaquetes[index].IDCamion = camion.Id
 				}
 
-				// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+				// s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
 				// 	IDPaquete: paquete.IDPaquete,
 				// 	Estado: "En camino",
 				// 	IDCamion: camion.Id,
@@ -366,17 +366,17 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 			}
 		}
 	}
-	log.Println(s.seguimientoPaquete)
+	log.Println(s.seguimientoPaquetes)
 	return &pb.PaqueteCamion{}, errors.New("Error al entregar paquete")
 }
 
-func Find(seguimientoPaquete []SeguimientoPaquete, paquete seguimientoPaquete) (index, seguimientoPaquete, error) {
-    for i, element := range seguimientoPaquete {
+func Find(seguimientoPaquetes []SeguimientoPaquete, paquete seguimientoPaquete) (int, seguimientoPaquete, error) {
+    for i, element := range seguimientoPaquetes {
         if paquete.IDSeguimiento == element.IDSeguimiento {
             return i, element, nil
         }
     }
-    return len(seguimientoPaquete), SeguimientoPaquete{}, errors.New("El paquete solicitado no se encuentra para seguimiento")
+    return len(seguimientoPaquetes), SeguimientoPaquete{}, errors.New("El paquete solicitado no se encuentra para seguimiento")
 }
 
 
