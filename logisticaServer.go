@@ -73,7 +73,7 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Valor:       int(ordenPyme.GetValor()),
 			Intentos:    0,
 			Origen: ordenPyme.GetOrigen(),
-			Destino: ordenPyme.GetDestino()
+			Destino: ordenPyme.GetDestino(),
 			Estado:      "En bodega"})
 	}
 	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
