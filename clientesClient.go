@@ -114,8 +114,16 @@ func pymeTest(conn *grpc.ClientConn, codigoSeguimiento int) int {
 }
 
 func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
-	// c := pb.NewLogisticaServiceClient(conn)
-	//pedir algo xd
+	c := pb.NewLogisticaServiceClient(conn)
+
+	infoSeguimiento, errorSeguimiento := c.SolicitarSeguimiento(context.Background(), &pb.SeguimientoPyme{Id: codigoSeguimiento})
+
+	if errorSeguimiento != nil {
+		log.Printf("Ocurrio un error al realizar el seguimiento.")
+	} else {
+		log.Println("ID Paquete: %v", infoSeguimiento.IDPaquete)
+		log.Println("Estado: %v", infoSeguimiento.Estado)
+	}
 }
 
 func main() {
@@ -134,14 +142,16 @@ func main() {
 	fmt.Scanln(&comp)
 
 	var codigoSeguimiento [50]int
-	var cantPedidosRetail int
-	var cantPedidosPyme int
+	var cantPedidos int
+	// var cantPedidosRetail int
+	// var cantPedidosPyme int
 	var opcion int
-	cantPedidosRetail = 1
-	cantPedidosPyme = 1
+	// cantPedidosRetail = 1
+	// cantPedidosPyme = 1
+	cantPedidos = 1
 	opcion = 0
 
-	for (cantPedidosRetail + cantPedidosPyme) < 51 { //while algo pase xd 50 pedidos maybe?
+	for cantPedidos < 51 { //while algo pase xd 50 pedidos maybe?
 		rand.Seed(time.Now().UnixNano())
 		opcion = rand.Intn(3)
 		opcionAux := strconv.Itoa(opcion)
@@ -151,10 +161,10 @@ func main() {
 			// orden pyme
 			log.Printf("Entro bien en orden PYME")
 			var seguimientoOrden int
-			seguimientoOrden = generarOrdenPyme(conn, cantPedidosPyme) //entrega el codigo de seguimiento
+			seguimientoOrden = generarOrdenPyme(conn, cantPedidos) //entrega el codigo de seguimiento
 			if seguimientoOrden != -1 {
-				codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
-				cantPedidosPyme++
+				codigoSeguimiento[cantPedidos] = seguimientoOrden
+				cantPedidos++
 			}
 			// var seguimientoOrden int
 			// seguimientoOrden = pymeTest(conn, cantPedidosPyme)
@@ -167,15 +177,17 @@ func main() {
 			// orden retail
 			log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
-			seguimientoRetail = generarOrdenRetail(conn, cantPedidosRetail) //algo entregara xd
+			seguimientoRetail = generarOrdenRetail(conn, cantPedidos) //algo entregara xd
 			if seguimientoRetail != -1 {
-				cantPedidosRetail++
+				cantPedidos++
 			}
 
 		} else {
 			// pedir seguimiento
-			if cantPedidosPyme > 0 {
+			if cantPedidos > 0 {
 				log.Printf("Entro bien en Seguimiento")
+				//falta probar seguimiento
+
 				// var randSeguimiento int
 				// randSeguimiento = rand.Intn(cantPedidosPyme)
 				// hacerSeguimiento(conn, codigoSeguimiento[randSeguimiento])

@@ -55,6 +55,24 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
+func (s *server) SolicitarSeguimiento(ctx context.Context, seguimientoPyme *pb.SeguimientoPyme) (*pb.SeguimientoPaqueteSolicitado, error) {
+	for s.lock {
+	}
+
+	s.lock = true
+
+	_, paquete, err := Find(s.seguimientoPaquetes, int(seguimientoPyme.Id))
+
+	if err != nil {
+		log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
+		return &pb.SeguimientoPaqueteSolicitado{}, errors.New("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
+	}
+
+	s.lock = false
+
+	return &pb.SeguimientoPaqueteSolicitado{IDPaquete: paquete.IDPaquete, Estado: paquete.Estado}, nil
+}
+
 func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
 	//Chequear si el servidor esta ocupado en otro requerimiento
 	for s.lock {
