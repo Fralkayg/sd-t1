@@ -19,14 +19,6 @@ type infoPaquete struct {
 	Estado    string
 }
 
-type Finanzas struct {
-	IDPaquete string
-	Tipo      string
-	Valor     int
-	Intentos  int
-	Estado    string
-}
-
 func convenioPYME(paquete infoPaquete) float32 {
 	if paquete.Tipo == "Prioritario" {
 		var ingreso float32
@@ -114,6 +106,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	var balance float32
 	conn, err := amqp.Dial("amqp://hahngoro:panconpalta@dist54:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -147,16 +140,16 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			var message Finanzas
-			json.Unmarshal(d.Body, &message)
-			fmt.Println(message)
+			var paquete infoPaquete
+			json.Unmarshal(d.Body, &paquete)
+			fmt.Println(paquete)
 			// log.Printf("Received a message: %s", d.Body)
 
-			// ingresos = ingresoPaquete(paquetito)
-			// registrarFinanza(paquetito)
+			ingresos = ingresoPaquete(paquete)
+			registrarFinanza(paquete)
 
-			// balance += ingresos
-			// log.Printf("Balance: %f dignipesos",balance)
+			balance += ingresos
+			log.Printf("Balance: %f dignipesos", balance)
 		}
 	}()
 
