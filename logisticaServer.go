@@ -253,6 +253,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	Intentos: 0})
 
 				fmt.Println("Cola retail: ", s.colaRetail)
+				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 			}
@@ -288,6 +289,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 						// 	Intentos: 0})
 
 						fmt.Println("Cola prioritario: ", s.colaPrioritario)
+						fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 						return paqueteCamion, nil
 					}
@@ -325,6 +327,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	Intentos: 0})
 
 				fmt.Println("Cola prioritario: ", s.colaPrioritario)
+				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 
@@ -361,12 +364,13 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	Intentos: 0})
 
 				fmt.Println("Cola normal: ", s.colaNormal)
+				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 			}
 		}
 	}
-	log.Println(s.seguimientoPaquetes)
+	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 	return &pb.PaqueteCamion{}, errors.New("Error al entregar paquete")
 }
 
