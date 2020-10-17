@@ -180,7 +180,7 @@ func main() {
 
 		} else {
 			// pedir seguimiento
-			
+
 			log.Printf("Entro bien en Seguimiento")
 			if len(seguimientos) > 0 {
 				randSeguimiento := rand.Intn(int(len(seguimientos)))
@@ -190,7 +190,6 @@ func main() {
 				hacerSeguimiento(conn, randSeguimiento)
 			}
 
-			}
 		}
 		time.Sleep(time.Duration(periodo) * time.Second)
 	}
