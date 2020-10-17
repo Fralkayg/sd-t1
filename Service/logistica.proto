@@ -8,7 +8,7 @@ service LogisticaService {
   rpc GenerarOrdenPyme (OrdenPyme) returns (SeguimientoPyme){}
   rpc GenerarOrdenRetail (OrdenRetail) returns (SeguimientoRetail){}
   rpc SolicitarPaquete (Camion) returns (PaqueteCamion){}
-  rpc SolicitarSeguimiento (SeguimientoPyme) returns (SeguimientoPaqueteSolicitado)
+  rpc SolicitarSeguimiento (SeguimientoPyme) returns (SeguimientoPaqueteSolicitado){}
 }
 
 message OrdenPyme {
@@ -23,14 +23,6 @@ message OrdenPyme {
 message SeguimientoPaqueteSolicitado{
   string IDPaquete = 1;
   string Estado = 2;
-}
-
-type SeguimientoPaquete struct {
-	IDPaquete     string
-	Estado        string
-	IDCamion      int
-	IDSeguimiento int
-	Intentos      int
 }
 
 message SeguimientoPyme {
