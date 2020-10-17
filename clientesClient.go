@@ -180,13 +180,15 @@ func main() {
 
 		} else {
 			// pedir seguimiento
-			if cantPedidos > 1 {
-				log.Printf("Entro bien en Seguimiento")
-				if len(seguimientos) > 0 {
-					randSeguimiento := rand.Intn(int(len(seguimientos)))
+			
+			log.Printf("Entro bien en Seguimiento")
+			if len(seguimientos) > 0 {
+				randSeguimiento := rand.Intn(int(len(seguimientos)))
 
-					hacerSeguimiento(conn, randSeguimiento)
-				}
+				fmt.Println("Seguimiento random escogido: ", randSeguimiento)
+
+				hacerSeguimiento(conn, randSeguimiento)
+			}
 
 			}
 		}
