@@ -1,0 +1,108 @@
+package main
+
+import (
+	"bufio"
+	"context"
+	"encoding/csv"
+	"fmt"
+	"io"
+	"log"
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
+	"encoding/json"
+	"github.com/streadway/amqp"
+
+	pb "github.com/Fralkayg/sd-t1/Service"
+	"google.golang.org/grpc"
+)
+
+
+type infoPaquete struct {
+	IDPaquete   string
+	Tipo        string
+	Valor       int
+	Intentos    int
+	Estado      string
+}
+
+func convenioPYME(paquete infoPaquete) float32{
+	if paquete.Tipo == "Prioritario"{
+		var ingreso float32
+		ingreso := float32(paquete.Valor) * 0.3
+		return ingreso
+	}else{
+		return 0
+	}
+}
+
+func ingresoPaquete(paquete infoPaquete) float32{
+	var ingresos float32
+	ingresos = 0
+	if paquete.Estado == "Recibido"{
+		ingresos += float32(paquete.Valor)
+		ingresos += convenioPYME(paquete)
+		ingresos -= float32(paquete.Intentos - 1) * 10)
+	}else{
+		if paquete.Tipo == "Normal"{
+			ingresos+=0
+			ingresos -= float32((paquete.Intentos - 1) * 10)
+		}else if paquete.Tipo == "Prioritario"{
+			ingresos += convenioPYME(paquete)
+			ingresos -= float32((paquete.Intentos - 1) * 10)
+		}else{
+			ingresos += float32(paquete.Valor)
+			ingresos -= float32((paquete.Intentos - 1) * 10)
+		}
+	}
+	return ingresos
+}
+
+func registrarFinanza(paquete infoPaquete){
+	finanzaFile, err := os.OpenFile("./registroFinanzas.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		finanzaAux, errAux := os.Create("./registroFinanzas.csv")
+		if errAux != nil {
+			log.Printf("ola")
+		}
+		finanzaFile = finanzaAux
+	}
+
+	defer finanzaFile.Close()
+
+	var fileData [][]string
+
+	// log.Printf("Generando linea en archivo del camion xd")
+	ingresos = ingresoPaquete(paquete)
+	fileData = append(fileData, []string{
+		paquete.IDPaquete,
+		paquete.Tipo,
+		//strconv.Itoa(int(paquete.Valor)),
+		//paquete.Origen,
+		//paquete.Destino,
+		strconv.Itoa(int(paquete.Intentos)),
+		paquete.Estado,
+		fmt.Sprintf("%f",ingresos)})
+
+	csvWriter := csv.NewWriter(finanzaFile)
+	csvWriter.WriteAll(fileData)
+	// csvWriter.Flush()
+}
+
+func main(){
+	//conn con rabbit xd
+	// usar colas rabbitMQ
+	// La representacion de los datos enviados a la cola de mensajes del sistema financiero debe ser mediante JSON.
+	// se obtiene un paquetito 
+	var balance float32
+
+	for{ 
+		ingresos = ingresoPaquete(paquetito)
+		registrarFinanza(paquetito)
+
+		balance += ingresos
+		log.Printf("Balance: %f dignipesos",balance)
+	}
+
+}
