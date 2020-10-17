@@ -1,57 +1,48 @@
 package main
 
 import (
-	"bufio"
-	"context"
 	"encoding/csv"
 	"fmt"
-	"io"
 	"log"
-	"math/rand"
 	"os"
 	"strconv"
-	"time"
-	"encoding/json"
-	"github.com/streadway/amqp"
 
-	pb "github.com/Fralkayg/sd-t1/Service"
-	"google.golang.org/grpc"
+	"github.com/streadway/amqp"
 )
 
-
 type infoPaquete struct {
-	IDPaquete   string
-	Tipo        string
-	Valor       int
-	Intentos    int
-	Estado      string
+	IDPaquete string
+	Tipo      string
+	Valor     int
+	Intentos  int
+	Estado    string
 }
 
-func convenioPYME(paquete infoPaquete) float32{
-	if paquete.Tipo == "Prioritario"{
+func convenioPYME(paquete infoPaquete) float32 {
+	if paquete.Tipo == "Prioritario" {
 		var ingreso float32
-		ingreso := float32(paquete.Valor) * 0.3
+		ingreso = float32(paquete.Valor) * 0.3
 		return ingreso
-	}else{
+	} else {
 		return 0
 	}
 }
 
-func ingresoPaquete(paquete infoPaquete) float32{
+func ingresoPaquete(paquete infoPaquete) float32 {
 	var ingresos float32
 	ingresos = 0
-	if paquete.Estado == "Recibido"{
+	if paquete.Estado == "Recibido" {
 		ingresos += float32(paquete.Valor)
 		ingresos += convenioPYME(paquete)
-		ingresos -= float32(paquete.Intentos - 1) * 10)
-	}else{
-		if paquete.Tipo == "Normal"{
-			ingresos+=0
+		ingresos -= float32((paquete.Intentos - 1) * 10)
+	} else {
+		if paquete.Tipo == "Normal" {
+			ingresos += 0
 			ingresos -= float32((paquete.Intentos - 1) * 10)
-		}else if paquete.Tipo == "Prioritario"{
+		} else if paquete.Tipo == "Prioritario" {
 			ingresos += convenioPYME(paquete)
 			ingresos -= float32((paquete.Intentos - 1) * 10)
-		}else{
+		} else {
 			ingresos += float32(paquete.Valor)
 			ingresos -= float32((paquete.Intentos - 1) * 10)
 		}
@@ -59,7 +50,7 @@ func ingresoPaquete(paquete infoPaquete) float32{
 	return ingresos
 }
 
-func registrarFinanza(paquete infoPaquete){
+func registrarFinanza(paquete infoPaquete) {
 	finanzaFile, err := os.OpenFile("./registroFinanzas.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		finanzaAux, errAux := os.Create("./registroFinanzas.csv")
@@ -83,7 +74,7 @@ func registrarFinanza(paquete infoPaquete){
 		//paquete.Destino,
 		strconv.Itoa(int(paquete.Intentos)),
 		paquete.Estado,
-		fmt.Sprintf("%f",ingresos)})
+		fmt.Sprintf("%f", ingresos)})
 
 	csvWriter := csv.NewWriter(finanzaFile)
 	csvWriter.WriteAll(fileData)
@@ -94,10 +85,10 @@ func registrarFinanza(paquete infoPaquete){
 // 	//conn con rabbit xd
 // 	// usar colas rabbitMQ
 // 	// La representacion de los datos enviados a la cola de mensajes del sistema financiero debe ser mediante JSON.
-// 	// se obtiene un paquetito 
+// 	// se obtiene un paquetito
 // 	var balance float32
 
-// 	for{ 
+// 	for{
 // 		ingresos = ingresoPaquete(paquetito)
 // 		registrarFinanza(paquetito)
 
@@ -106,8 +97,6 @@ func registrarFinanza(paquete infoPaquete){
 // 	}
 
 // }
-
-
 
 func failOnError(err error, msg string) {
 	if err != nil {
