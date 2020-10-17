@@ -6,7 +6,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -91,8 +90,10 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	if updateSeguimiento.Entregado {
 		s.seguimientoPaquetes[index].Estado = "Recibido"
+		log.Printf("El paquete %v ha sido recibido.", s.seguimientoPaquetes[index].IDPaquete)
 	} else {
 		s.seguimientoPaquetes[index].Estado = "No recibido"
+		log.Printf("El paquete %v no ha sido recibido.", s.seguimientoPaquetes[index].IDPaquete)
 	}
 
 	s.seguimientoPaquetes[index].Intentos = int(updateSeguimiento.Intentos)
@@ -368,7 +369,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
-					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+					log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
@@ -406,7 +407,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 						if err != nil {
 							log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 						} else {
-							fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+							log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 							s.seguimientoPaquetes[index].Estado = "En camino"
 							s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 						}
@@ -446,7 +447,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
-					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+					log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
@@ -485,7 +486,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
-					fmt.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+					log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
