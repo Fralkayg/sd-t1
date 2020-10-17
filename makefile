@@ -1,6 +1,6 @@
 logistica:
 	/sbin/service rabbitmq-server start
-	go run logisticaService.go
+	go run logisticaServer.go
 finanzas:
 	/sbin/service rabbitmq-server start
 	go run finanzasClient.go
