@@ -8,7 +8,7 @@ service LogisticaService {
   rpc GenerarOrdenPyme (OrdenPyme) returns (SeguimientoPyme){}
   rpc GenerarOrdenRetail (OrdenRetail) returns (SeguimientoRetail){}
   rpc SolicitarPaquete (Camion) returns (PaqueteCamion){}
-  rpc SolicitarSeguimiento (SeguimientoPyme) returns (SeguimientoPaqueteSolicitado)
+  rpc SolicitarSeguimiento (SeguimientoPyme) returns (SeguimientoPaqueteSolicitado){}
   rpc ActualizarSeguimiento (UpdateSeguimiento) returns (StatusSeguimiento){}
 }
 
