@@ -156,7 +156,7 @@ func main() {
 		opcion = rand.Intn(2)
 		opcionAux := strconv.Itoa(opcion)
 
-		log.Printf("Opcion: %v", opcionAux)
+		// log.Printf("Opcion: %v", opcionAux)
 		if opcion == 0 && comp == 0 {
 			// orden pyme
 			// log.Printf("Entro bien en orden PYME")
@@ -182,7 +182,7 @@ func main() {
 		} else if opcion == 1 {
 			// pedir seguimiento
 
-			log.Printf("Entro bien en Seguimiento")
+			// log.Printf("Entro bien en Seguimiento")
 			if len(seguimientos) > 0 {
 				randSeguimiento := rand.Intn(int(len(seguimientos))) + 1
 				// fmt.Println("Seguimiento random escogido: ", randSeguimiento)
