@@ -292,19 +292,19 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 		Valor:        paquete.GetValor(),
 		Origen:       paquete.GetOrigen(),
 		Destino:      paquete.GetDestino(),
-		Seguimiento:  paquete.GetSeguimiento(),
+		Seguimiento:  int(paquete.GetSeguimiento()),
 		Intentos:     0,
 		penalizacion: 0}
 	truck.cantPaquetes++
 	return infoPaquete
 }
 
-func actualizarSeguimiento(conn *grpc.Clientconn, paquete infoPaquete) {
+func actualizarSeguimiento(conn *grpc.ClientConn, paquete infoPaquete) {
 	c := pb.NewLogisticaServiceClient(conn)
 
 	status, errorStatus := c.ActualizarSeguimiento(context.Background(), &pb.UpdateSeguimiento{
 		Entregado:   paquete.entregado,
-		Seguimiento: paquete.Seguimiento,
+		Seguimiento: int32(paquete.Seguimiento),
 		Intentos:    paquete.Intentos})
 
 	if errorStatus != nil {

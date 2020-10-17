@@ -116,7 +116,7 @@ func pymeTest(conn *grpc.ClientConn, codigoSeguimiento int) int {
 func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	infoSeguimiento, errorSeguimiento := c.SolicitarSeguimiento(context.Background(), &pb.SeguimientoPyme{Id: codigoSeguimiento})
+	infoSeguimiento, errorSeguimiento := c.SolicitarSeguimiento(context.Background(), &pb.SeguimientoPyme{Id: int32(codigoSeguimiento)})
 
 	if errorSeguimiento != nil {
 		log.Printf("Ocurrio un error al realizar el seguimiento.")
