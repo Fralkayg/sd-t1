@@ -141,13 +141,12 @@ func main() {
 	log.Printf("Seleccione el comportamiento. PYME(0) o Retail(1). (0/1):")
 	fmt.Scanln(&comp)
 
-	var codigoSeguimiento [50]int
+	var seguimientos []int
+
 	var cantPedidos int
-	// var cantPedidosRetail int
-	// var cantPedidosPyme int
+
 	var opcion int
-	// cantPedidosRetail = 1
-	// cantPedidosPyme = 1
+
 	cantPedidos = 1
 	opcion = 0
 
@@ -160,25 +159,22 @@ func main() {
 		if opcion == 0 && comp == 0 {
 			// orden pyme
 			log.Printf("Entro bien en orden PYME")
-			var seguimientoOrden int
-			seguimientoOrden = generarOrdenPyme(conn, cantPedidos) //entrega el codigo de seguimiento
-			if seguimientoOrden != -1 {
-				codigoSeguimiento[cantPedidos] = seguimientoOrden
+			var seguimientoPyme int
+			seguimientoPyme = generarOrdenPyme(conn, cantPedidos) //entrega el codigo de seguimiento
+			if seguimientoPyme != -1 {
+				seguimientos = append(seguimientos, seguimientoPyme)
+
 				cantPedidos++
 			}
-			// var seguimientoOrden int
-			// seguimientoOrden = pymeTest(conn, cantPedidosPyme)
-			// codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
-
-			// log.Printf("Orden seguimiento PYME: %v", strconv.Itoa(seguimientoOrden))
-			// cantPedidosPyme++
 
 		} else if opcion == 1 && comp == 1 {
 			// orden retail
 			log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
-			seguimientoRetail = generarOrdenRetail(conn, cantPedidos) //algo entregara xd
+			seguimientoRetail = generarOrdenRetail(conn, cantPedidos) //entrega el codigo de seguimiento
 			if seguimientoRetail != -1 {
+				seguimientos = append(seguimientos, seguimientoRetail)
+
 				cantPedidos++
 			}
 
@@ -186,11 +182,9 @@ func main() {
 			// pedir seguimiento
 			if cantPedidos > 0 {
 				log.Printf("Entro bien en Seguimiento")
-				//falta probar seguimiento
+				randSeguimiento := rand.Intn(len(seguimientos))
 
-				// var randSeguimiento int
-				// randSeguimiento = rand.Intn(cantPedidosPyme)
-				// hacerSeguimiento(conn, codigoSeguimiento[randSeguimiento])
+				hacerSeguimiento(conn, randSeguimiento)
 			}
 		}
 		time.Sleep(time.Duration(periodo) * time.Second)
