@@ -142,7 +142,7 @@ func main() {
 		for d := range msgs {
 			var paquete infoPaquete
 			json.Unmarshal(d.Body, &paquete)
-			fmt.Println(paquete)
+			// fmt.Println(paquete)
 			// log.Printf("Received a message: %s", d.Body)
 
 			ingresos := ingresoPaquete(paquete)
