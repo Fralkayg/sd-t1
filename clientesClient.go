@@ -116,7 +116,7 @@ func pymeTest(conn *grpc.ClientConn, codigoSeguimiento int) int {
 func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	infoSeguimiento, errorSeguimiento := c.SolicitarSeguimiento(context.Background(), &pb.SeguimientoPyme{Id: codigoSeguimiento})
+	infoSeguimiento, errorSeguimiento := c.SolicitarSeguimiento(context.Background(), &pb.SeguimientoPyme{Id: int32(codigoSeguimiento)})
 
 	if errorSeguimiento != nil {
 		log.Printf("Ocurrio un error al realizar el seguimiento.")
@@ -141,57 +141,55 @@ func main() {
 	log.Printf("Seleccione el comportamiento. PYME(0) o Retail(1). (0/1):")
 	fmt.Scanln(&comp)
 
-	var codigoSeguimiento [50]int
+	var seguimientos []int
+
 	var cantPedidos int
-	// var cantPedidosRetail int
-	// var cantPedidosPyme int
+
 	var opcion int
-	// cantPedidosRetail = 1
-	// cantPedidosPyme = 1
+
 	cantPedidos = 1
 	opcion = 0
 
 	for cantPedidos < 51 { //while algo pase xd 50 pedidos maybe?
 		rand.Seed(time.Now().UnixNano())
-		opcion = rand.Intn(3)
+		opcion = rand.Intn(2)
 		opcionAux := strconv.Itoa(opcion)
 
 		log.Printf("Opcion: %v", opcionAux)
 		if opcion == 0 && comp == 0 {
 			// orden pyme
 			log.Printf("Entro bien en orden PYME")
-			var seguimientoOrden int
-			seguimientoOrden = generarOrdenPyme(conn, cantPedidos) //entrega el codigo de seguimiento
-			if seguimientoOrden != -1 {
-				codigoSeguimiento[cantPedidos] = seguimientoOrden
+			var seguimientoPyme int
+			seguimientoPyme = generarOrdenPyme(conn, cantPedidos) //entrega el codigo de seguimiento
+			if seguimientoPyme != -1 {
+				seguimientos = append(seguimientos, seguimientoPyme)
+
 				cantPedidos++
 			}
-			// var seguimientoOrden int
-			// seguimientoOrden = pymeTest(conn, cantPedidosPyme)
-			// codigoSeguimiento[cantPedidosPyme] = seguimientoOrden
 
-			// log.Printf("Orden seguimiento PYME: %v", strconv.Itoa(seguimientoOrden))
-			// cantPedidosPyme++
-
-		} else if opcion == 1 && comp == 1 {
+		} else if opcion == 0 && comp == 1 {
 			// orden retail
 			log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
-			seguimientoRetail = generarOrdenRetail(conn, cantPedidos) //algo entregara xd
+			seguimientoRetail = generarOrdenRetail(conn, cantPedidos) //entrega el codigo de seguimiento
 			if seguimientoRetail != -1 {
+				seguimientos = append(seguimientos, seguimientoRetail)
+
 				cantPedidos++
 			}
 
-		} else {
+		} else if opcion == 1 {
 			// pedir seguimiento
-			if cantPedidos > 0 {
-				log.Printf("Entro bien en Seguimiento")
-				//falta probar seguimiento
 
-				// var randSeguimiento int
-				// randSeguimiento = rand.Intn(cantPedidosPyme)
-				// hacerSeguimiento(conn, codigoSeguimiento[randSeguimiento])
+			log.Printf("Entro bien en Seguimiento")
+			if len(seguimientos) > 0 {
+				randSeguimiento := rand.Intn(int(len(seguimientos))) + 1
+
+				fmt.Println("Seguimiento random escogido: ", randSeguimiento)
+
+				hacerSeguimiento(conn, randSeguimiento)
 			}
+
 		}
 		time.Sleep(time.Duration(periodo) * time.Second)
 	}
