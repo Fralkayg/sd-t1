@@ -36,7 +36,7 @@ type infoPaquete struct {
 	Destino      string
 	Intentos     int32
 	fechaEntrega string
-
+	Seguimiento  int
 	entregado    bool
 	penalizacion int32
 }
@@ -98,6 +98,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
+					actualizarSeguimiento(conn, truck.infoPaquete1)
 					truck.cantPaquetes--
 
 				} else {
@@ -112,6 +113,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
+					actualizarSeguimiento(conn, truck.infoPaquete2)
 					truck.cantPaquetes--
 
 				} else {
@@ -127,6 +129,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
+					actualizarSeguimiento(conn, truck.infoPaquete2)
 					truck.cantPaquetes--
 
 				} else {
@@ -141,6 +144,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
+					actualizarSeguimiento(conn, truck.infoPaquete1)
 					truck.cantPaquetes--
 
 				} else {
@@ -154,11 +158,13 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 
 	if truck.infoPaquete1.entregado == false {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete1)
+		actualizarSeguimiento(conn, truck.infoPaquete1)
 
 	}
 
 	if truck.infoPaquete2.entregado == false {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
+		actualizarSeguimiento(conn, truck.infoPaquete2)
 	}
 
 	fmt.Printf("Entrega normal \n")
@@ -184,6 +190,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
+					actualizarSeguimiento(conn, truck.infoPaquete1)
 					truck.cantPaquetes--
 
 				} else {
@@ -198,6 +205,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
+					actualizarSeguimiento(conn, truck.infoPaquete2)
 					truck.cantPaquetes--
 
 				} else {
@@ -216,6 +224,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete2)
+					actualizarSeguimiento(conn, truck.infoPaquete2)
 					truck.cantPaquetes--
 
 				} else {
@@ -230,6 +239,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
 					generarRegistro(strconv.Itoa(truck.Id), timestamp.String(), truck.infoPaquete1)
+					actualizarSeguimiento(conn, truck.infoPaquete1)
 					truck.cantPaquetes--
 
 				} else {
@@ -247,10 +257,12 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 
 	if truck.infoPaquete1.entregado == false {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete1)
+		actualizarSeguimiento(conn, truck.infoPaquete1)
 	}
 
 	if truck.infoPaquete2.entregado == false {
 		generarRegistro(strconv.Itoa(truck.Id), "0", truck.infoPaquete2)
+		actualizarSeguimiento(conn, truck.infoPaquete2)
 	}
 
 	fmt.Printf("Entrega retail \n")
@@ -280,10 +292,25 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 		Valor:        paquete.GetValor(),
 		Origen:       paquete.GetOrigen(),
 		Destino:      paquete.GetDestino(),
+		Seguimiento:  paquete.GetSeguimiento(),
 		Intentos:     0,
 		penalizacion: 0}
 	truck.cantPaquetes++
 	return infoPaquete
+}
+
+func actualizarSeguimiento(conn *grpc.Clientconn, paquete infoPaquete) {
+	c := pb.NewLogisticaServiceClient(conn)
+
+	status, errorStatus := c.ActualizarSeguimiento(context.Background(), &pb.UpdateSeguimiento{
+		Entregado:   paquete.entregado,
+		Seguimiento: paquete.Seguimiento,
+		Intentos:    paquete.Intentos})
+
+	if errorStatus != nil {
+		log.Println("Error al actualizar estado del paquete")
+	}
+
 }
 
 func cargarCamion(conn *grpc.ClientConn, truck *Camion, waitTime int) {

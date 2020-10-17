@@ -55,6 +55,33 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
+func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *pb.UpdateSeguimiento) (*pb.StatusSeguimiento, error) {
+	for s.lock {
+	}
+
+	s.lock = true
+
+	index, _, err := Find(s.seguimientoPaquetes, int(updateSeguimiento.Seguimiento))
+
+	if err != nil {
+		log.Printf("Hubo un error al actualizar el paquete solicitado.")
+		s.lock = false
+		return &pb.StatusSeguimiento{"Error al actualizar estado del paquete"}, errors.New("Error al actualizar estado del paquete")
+	}
+
+	if updateSeguimiento.Entregado {
+		s.seguimientoPaquetes[index].Estado = "Recibido"
+	} else {
+		s.seguimientoPaquetes[index].Estado = "No recibido"
+	}
+
+	s.seguimientoPaquetes[index].Intentos = int(updateSeguimiento.Intentos)
+
+	s.lock = false
+
+	return &pb.StatusSeguimiento{"Paquete actualizado correctamente"}, nil
+}
+
 func (s *server) SolicitarSeguimiento(ctx context.Context, seguimientoPyme *pb.SeguimientoPyme) (*pb.SeguimientoPaqueteSolicitado, error) {
 	for s.lock {
 	}
@@ -65,6 +92,7 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, seguimientoPyme *pb.S
 
 	if err != nil {
 		log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
+		s.lock = false
 		return &pb.SeguimientoPaqueteSolicitado{}, errors.New("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 	}
 

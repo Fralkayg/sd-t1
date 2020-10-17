@@ -9,6 +9,7 @@ service LogisticaService {
   rpc GenerarOrdenRetail (OrdenRetail) returns (SeguimientoRetail){}
   rpc SolicitarPaquete (Camion) returns (PaqueteCamion){}
   rpc SolicitarSeguimiento (SeguimientoPyme) returns (SeguimientoPaqueteSolicitado)
+  rpc ActualizarSeguimiento (UpdateSeguimiento) returns (StatusSeguimiento){}
 }
 
 message OrdenPyme {
@@ -25,16 +26,14 @@ message SeguimientoPaqueteSolicitado{
   string Estado = 2;
 }
 
-type SeguimientoPaquete struct {
-	IDPaquete     string
-	Estado        string
-	IDCamion      int
-	IDSeguimiento int
-	Intentos      int
-}
-
 message SeguimientoPyme {
   int32 Id = 1;
+}
+
+message UpdateSeguimiento{
+  bool Entregado = 1;
+  int32 Seguimiento = 2;
+  int32 Intentos = 3;
 }
 
 message OrdenRetail {
@@ -61,6 +60,11 @@ message PaqueteCamion{
   int32 Valor = 3;
   string Origen = 4;
   string Destino = 5;
+  int32 Seguimiento = 6;
+}
+
+message StatusSeguimiento{
+  string Mensaje = 1;
 }
 
 message HelloRequest {
