@@ -27,6 +27,15 @@ type server struct {
 	colaRetail      []paquete
 	colaPrioritario []paquete
 	colaNormal      []paquete
+	seguimientoPaquetes []SeguimientoPaquete
+}
+
+type SeguimientoPaquete struct{
+	IDPaquete string
+	Estado string
+	IDCamion int
+	IDSeguimiento int
+	Intentos int
 }
 
 type paquete struct {
@@ -57,6 +66,14 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	s.seguimiento++
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
+
+	s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+		IDPaquete: ordenPyme.GetId(),
+		Estado: "En bodega",
+		IDCamion: 0,
+		IDSeguimiento: s.seguimiento,
+		Intentos: 0})
+
 	if ordenPyme.GetPrioritario() == 1 {
 		s.colaPrioritario = enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
 			Seguimiento: s.seguimiento,
@@ -79,7 +96,8 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
 	// fmt.Println("Cola normal: ", s.colaNormal)
 	// log.Printf("Aqui deberia estar generandose la orden de Pyme")
-
+	log.Printf(s.seguimientoPaquete)
+	
 	s.lock = false
 	return &pb.SeguimientoPyme{Id: int32(s.seguimiento)}, nil
 }
@@ -94,6 +112,14 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 	s.seguimiento++
 
 	registroOrdenRetail(ordenRetail, s.seguimiento)
+
+	s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+		IDPaquete: ordenRetail.GetId(),
+		Estado: "En bodega",
+		IDCamion: 0,
+		IDSeguimiento: s.seguimiento,
+		Intentos: 0})
+
 	s.colaRetail = enqueue(s.colaRetail, paquete{IDPaquete: ordenRetail.GetId(),
 		Seguimiento: s.seguimiento,
 		Tipo:        "Retail",
@@ -105,6 +131,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 
 	// log.Printf("Aqui deberia estar generandose la orden Retail")
 	// fmt.Println("Cola retail: ", s.colaRetail)
+	log.Printf(s.seguimientoPaquete)
 
 	s.lock = false
 	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
@@ -208,9 +235,26 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Destino: paquete.Destino,
 					Valor: int32(paquete.Valor),
 				}
+
+				index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+
+				if err != nil {
+					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
+				}else {
+					s.seguimientoPaquete[index].Estado = "En camino"
+					s.seguimientoPaquete[index].IDCamion = camion.Id
+				}
+
+				// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+				// 	IDPaquete: paquete.IDPaquete,
+				// 	Estado: "En camino",
+				// 	IDCamion: camion.Id,
+				// 	IDSeguimiento: paquete.Seguimiento,
+				// 	Intentos: 0})
+				
 				fmt.Println("Cola retail: ", s.colaRetail)
+
 				return paqueteCamion, nil
-				//Falta agregar origen y destino
 			}
 		} else {
 			if camion.GetEntregaRetail() {
@@ -226,7 +270,25 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 							Destino: paquete.Destino,
 							Valor: int32(paquete.Valor),
 						}
+
+						index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+
+						if err != nil {
+							log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
+						}else {
+							s.seguimientoPaquete[index].Estado = "En camino"
+							s.seguimientoPaquete[index].IDCamion = camion.Id
+						}
+
+						// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+						// 	IDPaquete: paquete.IDPaquete,
+						// 	Estado: "En camino",
+						// 	IDCamion: camion.Id,
+						// 	IDSeguimiento: paquete.Seguimiento,
+						// 	Intentos: 0})
+
 						fmt.Println("Cola prioritario: ", s.colaPrioritario)
+
 						return paqueteCamion, nil
 					}
 				}
@@ -245,7 +307,25 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Destino: paquete.Destino,
 					Valor: int32(paquete.Valor),
 				}
+
+				index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+
+				if err != nil {
+					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
+				}else {
+					s.seguimientoPaquete[index].Estado = "En camino"
+					s.seguimientoPaquete[index].IDCamion = camion.Id
+				}
+
+				// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+				// 	IDPaquete: paquete.IDPaquete,
+				// 	Estado: "En camino",
+				// 	IDCamion: camion.Id,
+				// 	IDSeguimiento: paquete.Seguimiento,
+				// 	Intentos: 0})
+
 				fmt.Println("Cola prioritario: ", s.colaPrioritario)
+
 				return paqueteCamion, nil
 
 			}
@@ -263,13 +343,42 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Destino: paquete.Destino,
 					Valor: int32(paquete.Valor),
 				}
+
+				index, _, err := Find(s.seguimientoPaquete, paqueteCamion)
+
+				if err != nil {
+					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
+				}else {
+					s.seguimientoPaquete[index].Estado = "En camino"
+					s.seguimientoPaquete[index].IDCamion = camion.Id
+				}
+
+				// s.seguimientoPaquete = append(s.seguimientoPaquete, SeguimientoPaquete{
+				// 	IDPaquete: paquete.IDPaquete,
+				// 	Estado: "En camino",
+				// 	IDCamion: camion.Id,
+				// 	IDSeguimiento: paquete.Seguimiento,
+				// 	Intentos: 0})
+
 				fmt.Println("Cola normal: ", s.colaNormal)
+
 				return paqueteCamion, nil
 			}
 		}
 	}
+	log.Println(s.seguimientoPaquete)
 	return &pb.PaqueteCamion{}, errors.New("Error al entregar paquete")
 }
+
+func Find(seguimientoPaquete []SeguimientoPaquete, paquete seguimientoPaquete) (index, seguimientoPaquete, error) {
+    for i, element := range seguimientoPaquete {
+        if paquete.IDSeguimiento == element.IDSeguimiento {
+            return i, element, nil
+        }
+    }
+    return len(seguimientoPaquete), SeguimientoPaquete{}, errors.New("El paquete solicitado no se encuentra para seguimiento")
+}
+
 
 func main() {
 	lis, err := net.Listen("tcp", port)

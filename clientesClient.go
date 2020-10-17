@@ -147,7 +147,7 @@ func main() {
 		opcionAux := strconv.Itoa(opcion)
 
 		log.Printf("Opcion: %v", opcionAux)
-		if opcion == 0 && comp == 0{
+		if opcion == 0 && comp == 0 {
 			// orden pyme
 			log.Printf("Entro bien en orden PYME")
 			var seguimientoOrden int
@@ -163,7 +163,7 @@ func main() {
 			// log.Printf("Orden seguimiento PYME: %v", strconv.Itoa(seguimientoOrden))
 			// cantPedidosPyme++
 
-		} else if opcion == 1 && comp == 1{
+		} else if opcion == 1 && comp == 1 {
 			// orden retail
 			log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
