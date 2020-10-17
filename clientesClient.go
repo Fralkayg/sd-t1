@@ -183,7 +183,7 @@ func main() {
 
 			log.Printf("Entro bien en Seguimiento")
 			if len(seguimientos) > 0 {
-				randSeguimiento := rand.Intn(int(len(seguimientos)))
+				randSeguimiento := rand.Intn(int(len(seguimientos))) + 1
 
 				fmt.Println("Seguimiento random escogido: ", randSeguimiento)
 
