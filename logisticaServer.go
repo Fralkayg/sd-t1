@@ -241,6 +241,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
+					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
@@ -277,6 +278,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 						if err != nil {
 							log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 						} else {
+							fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 							s.seguimientoPaquetes[index].Estado = "En camino"
 							s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 						}
@@ -315,6 +317,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
+					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
@@ -352,6 +355,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
+					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
