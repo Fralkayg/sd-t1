@@ -302,7 +302,7 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 func actualizarSeguimiento(conn *grpc.ClientConn, paquete infoPaquete) {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	status, errorStatus := c.ActualizarSeguimiento(context.Background(), &pb.UpdateSeguimiento{
+	_, errorStatus := c.ActualizarSeguimiento(context.Background(), &pb.UpdateSeguimiento{
 		Entregado:   paquete.entregado,
 		Seguimiento: int32(paquete.Seguimiento),
 		Intentos:    paquete.Intentos})
