@@ -147,7 +147,7 @@ func main() {
 
 	var opcion int
 
-	cantPedidos = 1
+	cantPedidos = 0
 	opcion = 0
 
 	for cantPedidos < 51 { //while algo pase xd 50 pedidos maybe?
@@ -182,9 +182,12 @@ func main() {
 			// pedir seguimiento
 			if cantPedidos > 0 {
 				log.Printf("Entro bien en Seguimiento")
-				randSeguimiento := rand.Intn(int(len(seguimientos)))
+				if len(seguimientos) > 0 {
+					randSeguimiento := rand.Intn(int(len(seguimientos)))
 
-				hacerSeguimiento(conn, randSeguimiento)
+					hacerSeguimiento(conn, randSeguimiento)
+				}
+
 			}
 		}
 		time.Sleep(time.Duration(periodo) * time.Second)
