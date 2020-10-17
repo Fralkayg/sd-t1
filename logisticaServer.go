@@ -277,11 +277,12 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 
 			if paquete.IDPaquete != "" {
 				paqueteCamion := &pb.PaqueteCamion{
-					Id:      paquete.IDPaquete,
-					Tipo:    paquete.Tipo,
-					Origen:  paquete.Origen,
-					Destino: paquete.Destino,
-					Valor:   int32(paquete.Valor),
+					Id:          paquete.IDPaquete,
+					Tipo:        paquete.Tipo,
+					Origen:      paquete.Origen,
+					Destino:     paquete.Destino,
+					Valor:       int32(paquete.Valor),
+					Seguimiento: int32(paquete.Seguimiento),
 				}
 
 				index, _, err := Find(s.seguimientoPaquetes, paquete.Seguimiento)
@@ -319,6 +320,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 							Origen:  paquete.Origen,
 							Destino: paquete.Destino,
 							Valor:   int32(paquete.Valor),
+							Seguimiento: int32(paquete.Seguimiento)
 						}
 
 						index, _, err := Find(s.seguimientoPaquetes, paquete.Seguimiento)
@@ -358,6 +360,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Origen:  paquete.Origen,
 					Destino: paquete.Destino,
 					Valor:   int32(paquete.Valor),
+					Seguimiento: int32(paquete.Seguimiento)
 				}
 
 				index, _, err := Find(s.seguimientoPaquetes, paquete.Seguimiento)
@@ -396,6 +399,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 					Origen:  paquete.Origen,
 					Destino: paquete.Destino,
 					Valor:   int32(paquete.Valor),
+					Seguimiento: int32(paquete.Seguimiento)
 				}
 
 				index, _, err := Find(s.seguimientoPaquetes, paquete.Seguimiento)
