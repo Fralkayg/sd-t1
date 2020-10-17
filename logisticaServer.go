@@ -61,6 +61,8 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	s.lock = true
 
+	fmt.Println("Seguimiento a actualizar: ", updateSeguimiento.Seguimiento)
+
 	index, _, err := Find(s.seguimientoPaquetes, int(updateSeguimiento.Seguimiento))
 
 	if err != nil {
