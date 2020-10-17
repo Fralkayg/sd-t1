@@ -122,8 +122,8 @@ func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
 		log.Printf("Ocurrio un error al realizar el seguimiento.")
 	} else {
 		fmt.Println("Información de seguimiento de paquete ", codigoSeguimiento)
-		log.Println("ID Paquete: %v", infoSeguimiento.IDPaquete)
-		log.Println("Estado: %v", infoSeguimiento.Estado)
+		log.Println("ID Paquete: ", infoSeguimiento.IDPaquete)
+		log.Println("Estado: ", infoSeguimiento.Estado)
 	}
 }
 

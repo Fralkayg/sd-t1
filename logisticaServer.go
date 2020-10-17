@@ -97,7 +97,7 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	s.seguimientoPaquetes[index].Intentos = int(updateSeguimiento.Intentos)
 
-	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+	// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 	conn, err := amqp.Dial("amqp://hahngoro:panconpalta@dist54:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
