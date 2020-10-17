@@ -182,7 +182,7 @@ func main() {
 			// pedir seguimiento
 			if cantPedidos > 0 {
 				log.Printf("Entro bien en Seguimiento")
-				randSeguimiento := rand.Intn(len(seguimientos))
+				randSeguimiento := rand.Intn(int(len(seguimientos)))
 
 				hacerSeguimiento(conn, randSeguimiento)
 			}
