@@ -65,7 +65,7 @@ func registrarFinanza(paquete infoPaquete) {
 	var fileData [][]string
 
 	// log.Printf("Generando linea en archivo del camion xd")
-	ingresos = ingresoPaquete(paquete)
+	ingresos := ingresoPaquete(paquete)
 	fileData = append(fileData, []string{
 		paquete.IDPaquete,
 		paquete.Tipo,
