@@ -79,7 +79,7 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	s.lock = true
 
-	fmt.Println("Seguimiento a actualizar: ", updateSeguimiento.Seguimiento)
+	// fmt.Println("Seguimiento a actualizar: ", updateSeguimiento.Seguimiento)
 
 	index, _, err := Find(s.seguimientoPaquetes, int(updateSeguimiento.Seguimiento))
 
@@ -168,7 +168,7 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 
 	s.lock = true
 
-	log.Printf("Id orden: %v", ordenPyme.GetId())
+	log.Printf("Se recibio orden PYME. Id orden: %v", ordenPyme.GetId())
 	s.seguimiento++
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
@@ -220,7 +220,7 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
 	// fmt.Println("Cola normal: ", s.colaNormal)
 	// log.Printf("Aqui deberia estar generandose la orden de Pyme")
-	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+	// fmt.Println("Seguimiento orden: ", s.seguimientoPaquetes)
 
 	s.lock = false
 	return &pb.SeguimientoPyme{Id: int32(s.seguimiento)}, nil
@@ -232,7 +232,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 
 	s.lock = true
 
-	log.Printf("Id orden: %v", ordenRetail.GetId())
+	log.Printf("Se recibio orden Retail. Id orden: %v", ordenRetail.GetId())
 	s.seguimiento++
 
 	registroOrdenRetail(ordenRetail, s.seguimiento)
@@ -257,7 +257,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 
 	// log.Printf("Aqui deberia estar generandose la orden Retail")
 	// fmt.Println("Cola retail: ", s.colaRetail)
-	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+	// fmt.Println("Seguimiento orden: ", s.seguimientoPaquetes)
 
 	s.lock = false
 	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
@@ -281,7 +281,7 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 
 	var fileData [][]string
 
-	log.Printf("Generando linea en archivo registro.csv, Retail")
+	// log.Printf("Generando linea en archivo registro.csv, Retail")
 
 	fileData = append(fileData, []string{timeString,
 		strconv.Itoa(idSeguimiento),
@@ -319,7 +319,7 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 		tipoPyme = "normal"
 	}
 
-	log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
+	// log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
 
 	var fileData [][]string
 	fileData = append(fileData, []string{timestamp.Format("2020-01-01 00:00"),
@@ -380,8 +380,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	IDSeguimiento: paquete.Seguimiento,
 				// 	Intentos: 0})
 
-				fmt.Println("Cola retail: ", s.colaRetail)
-				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+				// fmt.Println("Cola retail: ", s.colaRetail)
+				// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 			}
@@ -418,8 +418,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 						// 	IDSeguimiento: paquete.Seguimiento,
 						// 	Intentos: 0})
 
-						fmt.Println("Cola prioritario: ", s.colaPrioritario)
-						fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+						// fmt.Println("Cola prioritario: ", s.colaPrioritario)
+						// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 						return paqueteCamion, nil
 					}
@@ -458,8 +458,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	IDSeguimiento: paquete.Seguimiento,
 				// 	Intentos: 0})
 
-				fmt.Println("Cola prioritario: ", s.colaPrioritario)
-				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+				// fmt.Println("Cola prioritario: ", s.colaPrioritario)
+				// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 
@@ -497,8 +497,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	IDSeguimiento: paquete.Seguimiento,
 				// 	Intentos: 0})
 
-				fmt.Println("Cola normal: ", s.colaNormal)
-				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+				// fmt.Println("Cola normal: ", s.colaNormal)
+				// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 			}

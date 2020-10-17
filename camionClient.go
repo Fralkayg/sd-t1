@@ -167,7 +167,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 		actualizarSeguimiento(conn, truck.infoPaquete2)
 	}
 
-	fmt.Printf("Entrega normal \n")
+	fmt.Printf("Entrega normal/prioritaria \n")
 	fmt.Printf("Estado paquete 1: %t\n", truck.infoPaquete1.entregado)
 	fmt.Printf("Estado paquete 2: %t\n", truck.infoPaquete2.entregado)
 	truck.cantPaquetes = 0
@@ -274,7 +274,6 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 }
 
 func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
-	//weas raras
 	c := pb.NewLogisticaServiceClient(conn)
 
 	paquete, errorPaquete := c.SolicitarPaquete(context.Background(), &pb.Camion{
@@ -282,10 +281,10 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 		Tipo:          truck.Tipo,
 		EntregaRetail: truck.entregaRetail})
 	if errorPaquete != nil {
-		log.Println("Error al recibir paquete desde logistica")
+		// log.Println("")
 		return infoPaquete{}
 	}
-	log.Printf("Se recibio exitosamente el paquete. Su ID es: %v", paquete.GetId())
+	fmt.Println("Se recibio exitosamente el paquete. Su ID es: ", paquete.GetId())
 	fmt.Println("ID Seguimiento: ", paquete.GetSeguimiento())
 
 	infoPaquete := infoPaquete{
@@ -304,10 +303,10 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 func actualizarSeguimiento(conn *grpc.ClientConn, paquete infoPaquete) {
 	c := pb.NewLogisticaServiceClient(conn)
 
-	fmt.Println("Actualizando estado del paquete.")
-	fmt.Println("Entregado: ", paquete.entregado)
-	fmt.Println("Seguimiento: ", paquete.Seguimiento)
-	fmt.Println("Intentos: ", paquete.Intentos)
+	// fmt.Println("Actualizando estado del paquete.")
+	// fmt.Println("Entregado: ", paquete.entregado)
+	// fmt.Println("Seguimiento: ", paquete.Seguimiento)
+	// fmt.Println("Intentos: ", paquete.Intentos)
 
 	_, errorStatus := c.ActualizarSeguimiento(context.Background(), &pb.UpdateSeguimiento{
 		Entregado:   paquete.entregado,
@@ -366,34 +365,34 @@ func main() {
 	fmt.Scanln(&tiempoEntrega)
 
 	for {
-		log.Println("Comienzo de carga")
-		log.Println("Cantidad paquetes camion 1: %v", strconv.Itoa(camion1.cantPaquetes))
-		log.Println("Cantidad paquetes camion 2: %v", strconv.Itoa(camion2.cantPaquetes))
-		log.Println("Cantidad paquetes camion 3: %v", strconv.Itoa(camion3.cantPaquetes))
+		// log.Println("Comienzo de carga")
+		// log.Println("Cantidad paquetes camion 1: %v", strconv.Itoa(camion1.cantPaquetes))
+		// log.Println("Cantidad paquetes camion 2: %v", strconv.Itoa(camion2.cantPaquetes))
+		// log.Println("Cantidad paquetes camion 3: %v", strconv.Itoa(camion3.cantPaquetes))
 		// carga de paquetes
 		if camion1.cantPaquetes == 0 {
 			cargarCamion(conn, camion1, waitTime)
-			log.Printf("Camion 1 cargado")
 		}
 		if camion2.cantPaquetes == 0 {
 			cargarCamion(conn, camion2, waitTime)
-			log.Printf("Camion 2 cargado")
 		}
 		if camion3.cantPaquetes == 0 {
 			cargarCamion(conn, camion3, waitTime)
-			log.Printf("Camion 3 cargado")
 		}
 
 		// entrega de paquetes
 		if camion1.cantPaquetes != 0 {
+			fmt.Println("Camion 1 cargado, procediendo a entrega. Cantidad de paquetes: ", camion1.cantPaquetes)
 			entregaRetail(conn, camion1, tiempoEntrega)
 		}
 		if camion2.cantPaquetes != 0 {
+			fmt.Println("Camion 2 cargado, procediendo a entrega. Cantidad de paquetes: ", camion2.cantPaquetes)
 			entregaRetail(conn, camion2, tiempoEntrega)
 		}
 		if camion3.cantPaquetes != 0 {
+			fmt.Println("Camion 3 cargado, procediendo a entrega. Cantidad de paquetes: ", camion3.cantPaquetes)
 			entregaNormal(conn, camion3, tiempoEntrega)
 		}
-		log.Println("Fin de entrega")
+		// log.Println("Fin de entrega")
 	}
 }
