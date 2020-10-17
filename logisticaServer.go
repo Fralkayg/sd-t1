@@ -66,7 +66,7 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 	if err != nil {
 		log.Printf("Hubo un error al actualizar el paquete solicitado.")
 		s.lock = false
-		return &pb.StatusSeguimiento{"Error al actualizar estado del paquete"}, errors.New("Error al actualizar estado del paquete")
+		return &pb.StatusSeguimiento{Mensaje: "Error al actualizar estado del paquete"}, errors.New("Error al actualizar estado del paquete")
 	}
 
 	if updateSeguimiento.Entregado {
@@ -79,7 +79,7 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	s.lock = false
 
-	return &pb.StatusSeguimiento{"Paquete actualizado correctamente"}, nil
+	return &pb.StatusSeguimiento{Mensaje: "Paquete actualizado correctamente"}, nil
 }
 
 func (s *server) SolicitarSeguimiento(ctx context.Context, seguimientoPyme *pb.SeguimientoPyme) (*pb.SeguimientoPaqueteSolicitado, error) {
