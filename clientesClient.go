@@ -152,7 +152,7 @@ func main() {
 
 	for cantPedidos < 51 { //while algo pase xd 50 pedidos maybe?
 		rand.Seed(time.Now().UnixNano())
-		opcion = rand.Intn(3)
+		opcion = rand.Intn(2)
 		opcionAux := strconv.Itoa(opcion)
 
 		log.Printf("Opcion: %v", opcionAux)
@@ -167,7 +167,7 @@ func main() {
 				cantPedidos++
 			}
 
-		} else if opcion == 1 && comp == 1 {
+		} else if opcion == 0 && comp == 1 {
 			// orden retail
 			log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
@@ -178,7 +178,7 @@ func main() {
 				cantPedidos++
 			}
 
-		} else {
+		} else if opcion == 1 {
 			// pedir seguimiento
 
 			log.Printf("Entro bien en Seguimiento")
