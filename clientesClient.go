@@ -36,10 +36,10 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 			return -1
 		}
 
-		log.Printf("Leyendo archivo retail. Linea: %v", strconv.Itoa(i))
+		// log.Printf("Leyendo archivo retail. Linea: %v", strconv.Itoa(i))
 
 		if lineaALeer == i {
-			log.Printf("Encontro la linea correspondiente en Retail. %v", strconv.Itoa(i))
+			// log.Printf("Encontro la linea correspondiente en Retail. %v", strconv.Itoa(i))
 			valorInt, _ := strconv.Atoi(linea[2])
 			seguimientoRetail, errorRetail := c.GenerarOrdenRetail(context.Background(), &pb.OrdenRetail{
 				Id:       linea[0],
@@ -52,7 +52,7 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 			if errorRetail != nil {
 				log.Fatalf("Error al enviar orden retail")
 			} else {
-				log.Printf("Se recibio exitosamente su orden. ")
+				log.Printf("Se recibio exitosamente su orden retail. Su id de seguimiento es: %v", strconv.Itoa(int(seguimientoRetail.Id)))
 				//Su ID de seguimiento es: %v", strconv.Itoa(int(seguimientoRetail.Id)
 			}
 			return int(seguimientoRetail.Id)
@@ -74,10 +74,10 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 			log.Fatal(error)
 			return -1
 		}
-		log.Printf("Leyendo archivo PYMES. Linea: %v", strconv.Itoa(i))
+		// log.Printf("Leyendo archivo PYMES. Linea: %v", strconv.Itoa(i))
 
 		if lineaALeer == i {
-			log.Printf("Encontro la linea correspondiente en PYME. %v", strconv.Itoa(i))
+			// log.Printf("Encontro la linea correspondiente en PYME. %v", strconv.Itoa(i))
 			valorInt, _ := strconv.Atoi(linea[2])
 			PrioriInt, _ := strconv.Atoi(linea[5])
 			seguimientoPyme, errorPyme := c.GenerarOrdenPyme(context.Background(), &pb.OrdenPyme{
@@ -91,7 +91,7 @@ func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 			if errorPyme != nil {
 				log.Fatalf("Error al enviar orden PYME")
 			} else {
-				log.Printf("Se recibio exitosamente su orden. Su ID de seguimiento es: %v", strconv.Itoa(int(seguimientoPyme.Id)))
+				log.Printf("Se recibio exitosamente su orden PYME. Su ID de seguimiento es: %v", strconv.Itoa(int(seguimientoPyme.Id)))
 				file.Close()
 				return int(seguimientoPyme.Id)
 			}
@@ -121,8 +121,9 @@ func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
 	if errorSeguimiento != nil {
 		log.Printf("Ocurrio un error al realizar el seguimiento.")
 	} else {
-		log.Println("ID Paquete: %v", infoSeguimiento.IDPaquete)
-		log.Println("Estado: %v", infoSeguimiento.Estado)
+		fmt.Println("Información de seguimiento de paquete ", codigoSeguimiento)
+		log.Println("ID Paquete: ", infoSeguimiento.IDPaquete)
+		log.Println("Estado: ", infoSeguimiento.Estado)
 	}
 }
 
@@ -155,10 +156,10 @@ func main() {
 		opcion = rand.Intn(2)
 		opcionAux := strconv.Itoa(opcion)
 
-		log.Printf("Opcion: %v", opcionAux)
+		// log.Printf("Opcion: %v", opcionAux)
 		if opcion == 0 && comp == 0 {
 			// orden pyme
-			log.Printf("Entro bien en orden PYME")
+			// log.Printf("Entro bien en orden PYME")
 			var seguimientoPyme int
 			seguimientoPyme = generarOrdenPyme(conn, cantPedidos) //entrega el codigo de seguimiento
 			if seguimientoPyme != -1 {
@@ -169,7 +170,7 @@ func main() {
 
 		} else if opcion == 0 && comp == 1 {
 			// orden retail
-			log.Printf("Entro bien en orden Retail")
+			// log.Printf("Entro bien en orden Retail")
 			var seguimientoRetail int
 			seguimientoRetail = generarOrdenRetail(conn, cantPedidos) //entrega el codigo de seguimiento
 			if seguimientoRetail != -1 {
@@ -181,12 +182,10 @@ func main() {
 		} else if opcion == 1 {
 			// pedir seguimiento
 
-			log.Printf("Entro bien en Seguimiento")
+			// log.Printf("Entro bien en Seguimiento")
 			if len(seguimientos) > 0 {
 				randSeguimiento := rand.Intn(int(len(seguimientos))) + 1
-
-				fmt.Println("Seguimiento random escogido: ", randSeguimiento)
-
+				// fmt.Println("Seguimiento random escogido: ", randSeguimiento)
 				hacerSeguimiento(conn, randSeguimiento)
 			}
 

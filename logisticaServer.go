@@ -4,8 +4,8 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -13,6 +13,7 @@ import (
 	"time"
 
 	pb "github.com/Fralkayg/sd-t1/Service"
+	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 )
 
@@ -36,6 +37,8 @@ type SeguimientoPaquete struct {
 	IDCamion      int
 	IDSeguimiento int
 	Intentos      int
+	Tipo          string
+	Valor         int
 }
 
 type paquete struct {
@@ -49,10 +52,24 @@ type paquete struct {
 	Destino     string
 }
 
+type Finanzas struct {
+	IDPaquete string
+	Tipo      string
+	Valor     int
+	Intentos  int
+	Estado    string
+}
+
 // SayHello implements helloworld.GreeterServer
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
+}
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
 }
 
 func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *pb.UpdateSeguimiento) (*pb.StatusSeguimiento, error) {
@@ -61,7 +78,7 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	s.lock = true
 
-	fmt.Println("Seguimiento a actualizar: ", updateSeguimiento.Seguimiento)
+	// fmt.Println("Seguimiento a actualizar: ", updateSeguimiento.Seguimiento)
 
 	index, _, err := Find(s.seguimientoPaquetes, int(updateSeguimiento.Seguimiento))
 
@@ -73,13 +90,53 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	if updateSeguimiento.Entregado {
 		s.seguimientoPaquetes[index].Estado = "Recibido"
+		log.Printf("El paquete %v ha sido recibido.", s.seguimientoPaquetes[index].IDPaquete)
 	} else {
 		s.seguimientoPaquetes[index].Estado = "No recibido"
+		log.Printf("El paquete %v no ha sido recibido.", s.seguimientoPaquetes[index].IDPaquete)
 	}
 
 	s.seguimientoPaquetes[index].Intentos = int(updateSeguimiento.Intentos)
 
-	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+	// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+
+	conn, err := amqp.Dial("amqp://hahngoro:panconpalta@dist54:5672/")
+	failOnError(err, "Failed to connect to RabbitMQ")
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	failOnError(err, "Failed to open a channel")
+	defer ch.Close()
+
+	q, err := ch.QueueDeclare(
+		"hello", // name
+		false,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
+	)
+	failOnError(err, "Failed to declare a queue")
+
+	finanzas := Finanzas{
+		IDPaquete: s.seguimientoPaquetes[index].IDPaquete,
+		Tipo:      s.seguimientoPaquetes[index].Tipo,
+		Valor:     s.seguimientoPaquetes[index].Valor,
+		Intentos:  s.seguimientoPaquetes[index].Intentos,
+		Estado:    s.seguimientoPaquetes[index].Estado}
+
+	b, _ := json.Marshal(finanzas)
+
+	err = ch.Publish(
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(b),
+		})
+	failOnError(err, "Failed to publish a message")
 
 	s.lock = false
 
@@ -112,17 +169,17 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 
 	s.lock = true
 
-	log.Printf("Id orden: %v", ordenPyme.GetId())
+	log.Printf("Se recibio orden PYME. Id orden: %v", ordenPyme.GetId())
 	s.seguimiento++
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
 
-	s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
-		IDPaquete:     ordenPyme.GetId(),
-		Estado:        "En bodega",
-		IDCamion:      0,
-		IDSeguimiento: s.seguimiento,
-		Intentos:      0})
+	// s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
+	// 	IDPaquete:     ordenPyme.GetId(),
+	// 	Estado:        "En bodega",
+	// 	IDCamion:      0,
+	// 	IDSeguimiento: s.seguimiento,
+	// 	Intentos:      0})
 
 	if ordenPyme.GetPrioritario() == 1 {
 		s.colaPrioritario = enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
@@ -133,6 +190,15 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Origen:      ordenPyme.GetOrigen(),
 			Destino:     ordenPyme.GetDestino(),
 			Estado:      "En bodega"})
+
+		s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
+			IDPaquete:     ordenPyme.GetId(),
+			Estado:        "En bodega",
+			IDCamion:      0,
+			IDSeguimiento: s.seguimiento,
+			Tipo:          "Prioritario",
+			Valor:         int(ordenPyme.GetValor()),
+			Intentos:      0})
 	} else {
 		s.colaNormal = enqueue(s.colaNormal, paquete{IDPaquete: ordenPyme.GetId(),
 			Seguimiento: s.seguimiento,
@@ -142,11 +208,20 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Origen:      ordenPyme.GetOrigen(),
 			Destino:     ordenPyme.GetDestino(),
 			Estado:      "En bodega"})
+
+		s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
+			IDPaquete:     ordenPyme.GetId(),
+			Estado:        "En bodega",
+			IDCamion:      0,
+			IDSeguimiento: s.seguimiento,
+			Tipo:          "Normal",
+			Valor:         int(ordenPyme.GetValor()),
+			Intentos:      0})
 	}
 	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
 	// fmt.Println("Cola normal: ", s.colaNormal)
 	// log.Printf("Aqui deberia estar generandose la orden de Pyme")
-	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+	// fmt.Println("Seguimiento orden: ", s.seguimientoPaquetes)
 
 	s.lock = false
 	return &pb.SeguimientoPyme{Id: int32(s.seguimiento)}, nil
@@ -158,7 +233,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 
 	s.lock = true
 
-	log.Printf("Id orden: %v", ordenRetail.GetId())
+	log.Printf("Se recibio orden Retail. Id orden: %v", ordenRetail.GetId())
 	s.seguimiento++
 
 	registroOrdenRetail(ordenRetail, s.seguimiento)
@@ -168,6 +243,8 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 		Estado:        "En bodega",
 		IDCamion:      0,
 		IDSeguimiento: s.seguimiento,
+		Tipo:          "Retail",
+		Valor:         int(ordenRetail.GetValor()),
 		Intentos:      0})
 
 	s.colaRetail = enqueue(s.colaRetail, paquete{IDPaquete: ordenRetail.GetId(),
@@ -181,7 +258,7 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 
 	// log.Printf("Aqui deberia estar generandose la orden Retail")
 	// fmt.Println("Cola retail: ", s.colaRetail)
-	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+	// fmt.Println("Seguimiento orden: ", s.seguimientoPaquetes)
 
 	s.lock = false
 	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
@@ -205,7 +282,7 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 
 	var fileData [][]string
 
-	log.Printf("Generando linea en archivo registro.csv, Retail")
+	// log.Printf("Generando linea en archivo registro.csv, Retail")
 
 	fileData = append(fileData, []string{timeString,
 		strconv.Itoa(idSeguimiento),
@@ -243,7 +320,7 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 		tipoPyme = "normal"
 	}
 
-	log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
+	// log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
 
 	var fileData [][]string
 	fileData = append(fileData, []string{timestamp.Format("2020-01-01 00:00"),
@@ -292,7 +369,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
-					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+					log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
@@ -304,8 +381,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	IDSeguimiento: paquete.Seguimiento,
 				// 	Intentos: 0})
 
-				fmt.Println("Cola retail: ", s.colaRetail)
-				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+				// fmt.Println("Cola retail: ", s.colaRetail)
+				// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 			}
@@ -330,7 +407,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 						if err != nil {
 							log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 						} else {
-							fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+							log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 							s.seguimientoPaquetes[index].Estado = "En camino"
 							s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 						}
@@ -342,8 +419,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 						// 	IDSeguimiento: paquete.Seguimiento,
 						// 	Intentos: 0})
 
-						fmt.Println("Cola prioritario: ", s.colaPrioritario)
-						fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+						// fmt.Println("Cola prioritario: ", s.colaPrioritario)
+						// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 						return paqueteCamion, nil
 					}
@@ -370,7 +447,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
-					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+					log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
@@ -382,8 +459,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	IDSeguimiento: paquete.Seguimiento,
 				// 	Intentos: 0})
 
-				fmt.Println("Cola prioritario: ", s.colaPrioritario)
-				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+				// fmt.Println("Cola prioritario: ", s.colaPrioritario)
+				// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 
@@ -409,7 +486,7 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				if err != nil {
 					log.Printf("El paquete solicitado no se encuentra en la lista de seguimiento de paquetes.")
 				} else {
-					fmt.Println("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
+					log.Printf("Se cambio el estado del paquete %v a En camino", paqueteCamion.Id)
 					s.seguimientoPaquetes[index].Estado = "En camino"
 					s.seguimientoPaquetes[index].IDCamion = int(camion.Id)
 				}
@@ -421,14 +498,14 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 				// 	IDSeguimiento: paquete.Seguimiento,
 				// 	Intentos: 0})
 
-				fmt.Println("Cola normal: ", s.colaNormal)
-				fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+				// fmt.Println("Cola normal: ", s.colaNormal)
+				// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 
 				return paqueteCamion, nil
 			}
 		}
 	}
-	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+	// fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
 	return &pb.PaqueteCamion{}, errors.New("Error al entregar paquete")
 }
 
