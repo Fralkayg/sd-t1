@@ -145,7 +145,7 @@ func main() {
 			fmt.Println(paquete)
 			// log.Printf("Received a message: %s", d.Body)
 
-			ingresos = ingresoPaquete(paquete)
+			ingresos := ingresoPaquete(paquete)
 			registrarFinanza(paquete)
 
 			balance += ingresos
