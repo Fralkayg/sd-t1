@@ -79,6 +79,8 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 
 	s.seguimientoPaquetes[index].Intentos = int(updateSeguimiento.Intentos)
 
+	fmt.Println("Seguimiento: ", s.seguimientoPaquetes)
+
 	s.lock = false
 
 	return &pb.StatusSeguimiento{Mensaje: "Paquete actualizado correctamente"}, nil
