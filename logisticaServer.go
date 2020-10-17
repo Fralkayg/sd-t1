@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -37,6 +38,8 @@ type SeguimientoPaquete struct {
 	IDCamion      int
 	IDSeguimiento int
 	Intentos      int
+	Tipo          string
+	Valor         int
 }
 
 type paquete struct {
@@ -48,6 +51,14 @@ type paquete struct {
 	Estado      string
 	Origen      string
 	Destino     string
+}
+
+type Finanzas struct {
+	IDPaquete string
+	Tipo      string
+	Valor     int
+	Intentos  int
+	Estado    string
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -106,7 +117,15 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	body := "Hello World!"
+	finanzas := Finanzas{
+		IDPaquete: s.seguimientoPaquetes[index].IDPaquete,
+		Tipo:      s.seguimientoPaquetes[index].Tipo,
+		Valor:     s.seguimientoPaquetes[index].Valor,
+		Intentos:  s.seguimientoPaquetes[index].Intentos,
+		Estado:    s.seguimientoPaquetes[index].Estado}
+
+	b, _ := json.Marshal(finanzas)
+
 	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
@@ -114,7 +133,7 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 		false,  // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(body),
+			Body:        []byte(b),
 		})
 	failOnError(err, "Failed to publish a message")
 
@@ -154,12 +173,12 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 
 	registroOrdenPyme(ordenPyme, s.seguimiento)
 
-	s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
-		IDPaquete:     ordenPyme.GetId(),
-		Estado:        "En bodega",
-		IDCamion:      0,
-		IDSeguimiento: s.seguimiento,
-		Intentos:      0})
+	// s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
+	// 	IDPaquete:     ordenPyme.GetId(),
+	// 	Estado:        "En bodega",
+	// 	IDCamion:      0,
+	// 	IDSeguimiento: s.seguimiento,
+	// 	Intentos:      0})
 
 	if ordenPyme.GetPrioritario() == 1 {
 		s.colaPrioritario = enqueue(s.colaPrioritario, paquete{IDPaquete: ordenPyme.GetId(),
@@ -170,6 +189,15 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Origen:      ordenPyme.GetOrigen(),
 			Destino:     ordenPyme.GetDestino(),
 			Estado:      "En bodega"})
+
+		s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
+			IDPaquete:     ordenPyme.GetId(),
+			Estado:        "En bodega",
+			IDCamion:      0,
+			IDSeguimiento: s.seguimiento,
+			Tipo:          "Prioritario",
+			Valor:         int(ordenPyme.GetValor()),
+			Intentos:      0})
 	} else {
 		s.colaNormal = enqueue(s.colaNormal, paquete{IDPaquete: ordenPyme.GetId(),
 			Seguimiento: s.seguimiento,
@@ -179,6 +207,15 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 			Origen:      ordenPyme.GetOrigen(),
 			Destino:     ordenPyme.GetDestino(),
 			Estado:      "En bodega"})
+
+		s.seguimientoPaquetes = append(s.seguimientoPaquetes, SeguimientoPaquete{
+			IDPaquete:     ordenPyme.GetId(),
+			Estado:        "En bodega",
+			IDCamion:      0,
+			IDSeguimiento: s.seguimiento,
+			Tipo:          "Normal",
+			Valor:         int(ordenPyme.GetValor()),
+			Intentos:      0})
 	}
 	// fmt.Println("Cola prioritario: ", s.colaPrioritario)
 	// fmt.Println("Cola normal: ", s.colaNormal)
@@ -205,6 +242,8 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 		Estado:        "En bodega",
 		IDCamion:      0,
 		IDSeguimiento: s.seguimiento,
+		Tipo:          "Retail",
+		Valor:         int(ordenRetail.GetValor()),
 		Intentos:      0})
 
 	s.colaRetail = enqueue(s.colaRetail, paquete{IDPaquete: ordenRetail.GetId(),

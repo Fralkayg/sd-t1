@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +12,14 @@ import (
 )
 
 type infoPaquete struct {
+	IDPaquete string
+	Tipo      string
+	Valor     int
+	Intentos  int
+	Estado    string
+}
+
+type Finanzas struct {
 	IDPaquete string
 	Tipo      string
 	Valor     int
@@ -138,7 +147,10 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			var message Finanzas
+			json.Unmarshal(d.body, &message)
+			fmt.Println(message)
+			// log.Printf("Received a message: %s", d.Body)
 
 			// ingresos = ingresoPaquete(paquetito)
 			// registrarFinanza(paquetito)
