@@ -83,7 +83,7 @@ func generarRegistro(idCamion string, fecha string, paquete infoPaquete) {
 	// csvWriter.Flush()
 }
 
-func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
+func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 	var intentosTotales int
 	intentosTotales = 0
 
@@ -93,6 +93,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 			//
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
 				truck.infoPaquete1.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
@@ -106,6 +107,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 
 			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion && truck.infoPaquete2.entregado == false {
 				truck.infoPaquete2.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
@@ -120,6 +122,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 			//
 			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion {
 				truck.infoPaquete2.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
@@ -133,6 +136,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion && truck.infoPaquete1.entregado == false {
 				truck.infoPaquete1.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
@@ -165,7 +169,7 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion) {
 	truck.infoPaquete2 = infoPaquete{}
 }
 
-func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
+func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 	var intentosTotales int
 	intentosTotales = 0
 
@@ -175,6 +179,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 			//
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion {
 				truck.infoPaquete1.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
@@ -188,6 +193,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 
 			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion && truck.infoPaquete2.entregado == false {
 				truck.infoPaquete2.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
@@ -205,6 +211,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 			//
 			if truck.infoPaquete2.Valor > truck.infoPaquete2.penalizacion {
 				truck.infoPaquete2.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete2.entregado = true
@@ -218,6 +225,7 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion) {
 
 			if truck.infoPaquete1.Valor > truck.infoPaquete1.penalizacion && truck.infoPaquete1.entregado == false {
 				truck.infoPaquete1.Intentos++
+				time.Sleep(time.Duration(tiempoEntrega) * time.Second)
 				if ochentaPorcientoXD() == true {
 					timestamp := time.Now()
 					truck.infoPaquete1.entregado = true
@@ -319,6 +327,10 @@ func main() {
 	log.Printf("Ingrese el tiempo de espera de 2do paquete: ")
 	fmt.Scanln(&waitTime)
 
+	var tiempoEntrega int
+	log.Printf("Ingrese el tiempo que demora en entregar un paquete: ")
+	fmt.Scanln(&tiempoEntrega)
+
 	for {
 		log.Println("Comienzo de carga")
 		log.Println("Cantidad paquetes camion 1: %v", strconv.Itoa(camion1.cantPaquetes))
@@ -340,13 +352,13 @@ func main() {
 
 		// entrega de paquetes
 		if camion1.cantPaquetes != 0 {
-			entregaRetail(conn, camion1)
+			entregaRetail(conn, camion1, tiempoEntrega)
 		}
 		if camion2.cantPaquetes != 0 {
-			entregaRetail(conn, camion2)
+			entregaRetail(conn, camion2, tiempoEntrega)
 		}
 		if camion3.cantPaquetes != 0 {
-			entregaNormal(conn, camion3)
+			entregaNormal(conn, camion3, tiempoEntrega)
 		}
 		log.Println("Fin de entrega")
 	}
