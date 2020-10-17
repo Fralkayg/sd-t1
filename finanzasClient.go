@@ -148,7 +148,7 @@ func main() {
 	go func() {
 		for d := range msgs {
 			var message Finanzas
-			json.Unmarshal(d.body, &message)
+			json.Unmarshal(d.Body, &message)
 			fmt.Println(message)
 			// log.Printf("Received a message: %s", d.Body)
 
