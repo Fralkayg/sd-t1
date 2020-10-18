@@ -19,6 +19,17 @@ type infoPaquete struct {
 	Estado    string
 }
 
+
+/** convenioPYME
+** Parámetros **
+- paquete: información del paquete
+** Retorno **
+float con la cantidad de ingresos 
+
+** Descripción **
+Revisa si el paquete es del tipo Prioritario para verificar si se gana un 30% más
+
+**/
 func convenioPYME(paquete infoPaquete) float32 {
 	if paquete.Tipo == "Prioritario" {
 		var ingreso float32
@@ -29,6 +40,16 @@ func convenioPYME(paquete infoPaquete) float32 {
 	}
 }
 
+/** ingresoPaquete
+** Parámetros **
+- paquete: información del paquete
+** Retorno **
+floats con la cantidad de ingresos y de perdidas
+
+** Descripción **
+Calcula la cantidad de ingresos y perdidas de un paquete, según la información de este último.
+
+**/
 func ingresoPaquete(paquete infoPaquete) (float32, float32) {
 	var ingresos float32
 	var perdidas float32
@@ -54,6 +75,20 @@ func ingresoPaquete(paquete infoPaquete) (float32, float32) {
 	return ingresos, perdidas
 }
 
+
+/** registrarFinanza
+** Parámetros **
+- paquete: información del paquete
+- ingresos: valor de la cantidad de ingresos 
+- perdidas: valor de la cantidad de pérdidas
+** Retorno **
+Ninguno
+
+** Descripción **
+Realiza el registro de la información respecto al paquete recibido.
+Registra el ID, tipo, intentos, estado y las ganancias y perdidas generadas por el paquete.
+
+**/
 func registrarFinanza(paquete infoPaquete, ingresos float32, perdidas float32) {
 	finanzaFile, err := os.OpenFile("./registroFinanzas.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -86,12 +121,27 @@ func registrarFinanza(paquete infoPaquete, ingresos float32, perdidas float32) {
 	// csvWriter.Flush()
 }
 
+/** failOnError
+
+** Descripción **
+Función necesaria para el funcionamiento de RabbitMQ. Importada desde https://www.rabbitmq.com/tutorials/tutorial-one-go.html
+**/
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
+/** main
+** Parámetros **
+Ninguno
+** Retorno **
+Ninguno
+
+** Descripción **
+Realiza la conexión al servidor por RabbitMQ y crea una cola que recibe los pedidos, para luego 
+registrar la información y calcular las ganancias y pérdidas de cada paquete, junto a un balance total.
+**/
 func main() {
 	var balance float32
 	var gananciasTotal float32

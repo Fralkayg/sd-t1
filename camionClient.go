@@ -41,6 +41,17 @@ type infoPaquete struct {
 	penalizacion int32
 }
 
+/** ochentaPorcientoXD
+** Parámetros **
+Ninguno
+** Retorno **
+- bool
+
+** Descripción **
+Realiza un random para revisar si la entrega se cumple o no. 
+Si el valor está dentro del 80%, se cumple y retorna true. Si no, retorna false.
+
+**/
 func ochentaPorcientoXD() bool {
 	rand.Seed(time.Now().UnixNano())
 	probabilidad := rand.Intn(100)
@@ -53,6 +64,19 @@ func ochentaPorcientoXD() bool {
 
 }
 
+/** generarRegistro
+** Parámetros **
+- idCamion: id del camión que va a registrar información
+- fecha: fecha y hora de la entrega realizada
+- paquete: información del paquete
+** Retorno **
+Ninguno
+
+** Descripción **
+Escribe en un archivo .csv el registro de las entregas realizadas por el camion asignado.
+Contiene el ID, tipo, valor, origen, destino, intentos y la fecha de entrega
+
+**/
 func generarRegistro(idCamion string, fecha string, paquete infoPaquete) {
 	CamionFile, err := os.OpenFile("./camion"+idCamion+".csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -83,6 +107,19 @@ func generarRegistro(idCamion string, fecha string, paquete infoPaquete) {
 	// csvWriter.Flush()
 }
 
+
+/** entregaNormal
+** Parámetros **
+- conn: conexión gRPC con el servidor
+- truck: información del camion
+- tiempoEntrega: tiempo que demora el camión en realizar un envío
+** Retorno **
+Ninguno
+
+** Descripción **
+Realiza los envíos de los paquetes asignados al camión del tipo normal. 
+A su vez, genera registros y envía la información al servidor, con el uso de otras funciones.
+**/
 func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 	var intentosTotales int
 	intentosTotales = 0
@@ -175,6 +212,19 @@ func entregaNormal(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 	truck.infoPaquete2 = infoPaquete{}
 }
 
+
+/** entregaRetail
+** Parámetros **
+- conn: conexión gRPC con el servidor
+- truck: información del camion
+- tiempoEntrega: tiempo que demora el camión en realizar un envío
+** Retorno **
+Ninguno
+
+** Descripción **
+Realiza los envíos de los paquetes asignados al camión del tipo retail. 
+A su vez, genera registros y envía la información al servidor, con el uso de otras funciones.
+**/
 func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 	var intentosTotales int
 	intentosTotales = 0
@@ -273,6 +323,16 @@ func entregaRetail(conn *grpc.ClientConn, truck *Camion, tiempoEntrega int) {
 	truck.infoPaquete2 = infoPaquete{}
 }
 
+/** pedirPaquete
+** Parámetros **
+- conn: conexión gRPC con el servidor
+- truck: información del camion
+** Retorno **
+infoPaquete: información del paquete recibido
+
+** Descripción **
+Se comunica con el servidor para pedir un paquete a entregar.
+**/
 func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 	c := pb.NewLogisticaServiceClient(conn)
 
@@ -300,6 +360,16 @@ func pedirPaquete(conn *grpc.ClientConn, truck *Camion) infoPaquete {
 	return infoPaquete
 }
 
+/** actualizarSeguimiento
+** Parámetros **
+- conn: conexión gRPC con el servidor
+- paquete; información del paquete
+** Retorno **
+Ninguno
+
+** Descripción **
+Se comunica con el servidor para informarle del estado del paquete (si fue recibido o no), junto a los intentos.
+**/
 func actualizarSeguimiento(conn *grpc.ClientConn, paquete infoPaquete) {
 	c := pb.NewLogisticaServiceClient(conn)
 
@@ -319,6 +389,18 @@ func actualizarSeguimiento(conn *grpc.ClientConn, paquete infoPaquete) {
 
 }
 
+
+/** cargarCamion
+** Parámetros **
+- conn: conexión gRPC con el servidor
+- truck: información del camion
+- waitTime; tiempo de espera del camión para recibir un segundo paquete
+** Retorno **
+Ninguno
+
+** Descripción **
+Se comunica con el servidor para pedir los paquetes. Pide máximo dos.
+**/
 func cargarCamion(conn *grpc.ClientConn, truck *Camion, waitTime int) {
 	truck.infoPaquete1 = pedirPaquete(conn, truck)
 	if truck.cantPaquetes == 1 {
@@ -327,6 +409,17 @@ func cargarCamion(conn *grpc.ClientConn, truck *Camion, waitTime int) {
 	}
 }
 
+
+/** main
+** Parámetros **
+Ninguno
+** Retorno **
+Ninguno
+
+** Descripción **
+Crea los tres camiones, pide tiempos de espera para un segundo paquete y de demora del envío
+y realiza un loop infinito de carga de camiones y entrega de paquetes
+**/
 func main() {
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {

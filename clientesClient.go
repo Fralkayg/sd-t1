@@ -21,6 +21,17 @@ const (
 	defaultName = "world"
 )
 
+/** generarOrdenRetail
+** Parámetros **
+- conn: conexión con el servidor
+- lineaALeer: valor de la línea a leer del archivo .csv que contiene los pedidos
+** Retorno **
+- entero con el número de seguimiento o con un -1 en el caso de que falle el pedido
+
+** Descripción **
+Lee el archivo .csv que contiene los pedidos Retail para obtener la información del pedido de un paquete.
+
+**/
 func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 
@@ -61,6 +72,17 @@ func generarOrdenRetail(conn *grpc.ClientConn, lineaALeer int) int {
 	return -1
 }
 
+/** generarOrdenRetail
+** Parámetros **
+- conn: conexión con el servidor
+- lineaALeer: valor de la línea a leer del archivo .csv que contiene los pedidos
+** Retorno **
+- entero con el número de seguimiento o con un -1 en el caso de que falle el pedido
+
+** Descripción **
+Lee el archivo .csv que contiene los pedidos PYME para obtener la información del pedido de un paquete.
+
+**/
 func generarOrdenPyme(conn *grpc.ClientConn, lineaALeer int) int {
 	c := pb.NewLogisticaServiceClient(conn)
 
@@ -113,6 +135,17 @@ func pymeTest(conn *grpc.ClientConn, codigoSeguimiento int) int {
 	return -1
 }
 
+/** hacerSeguimiento
+** Parámetros **
+- conn: conexión con el servidor
+- codigoSeguimiento: número del código de seguimiento de un paquete
+** Retorno **
+Ninguno 
+
+** Descripción **
+Se comunica con el servidor para saber el estado del paquete solicitado mediante el código de seguimiento
+
+**/
 func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
 	c := pb.NewLogisticaServiceClient(conn)
 
@@ -127,6 +160,17 @@ func hacerSeguimiento(conn *grpc.ClientConn, codigoSeguimiento int) {
 	}
 }
 
+
+/** main
+** Parámetros **
+Ninguno
+** Retorno **
+Ninguno 
+
+** Descripción **
+Se comunica con el servidor, pide el tiempo entre órdenes de cada pedido, el comportamiento que tomará el cliente (PYME o Retail) y
+entra en un loop, enviando pedidos de paquetes al servidor o realizando seguimiento a uno de los paquetes.
+**/
 func main() {
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
