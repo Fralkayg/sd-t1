@@ -94,6 +94,10 @@ func failOnError(err error, msg string) {
 
 func main() {
 	var balance float32
+	var gananciasTotal float32
+	var perdidasTotal float32
+	gananciasTotal = 0
+	perdidasTotal = 0
 	balance = 0
 
 	conn, err := amqp.Dial("amqp://hahngoro:panconpalta@dist54:5672/")
@@ -135,9 +139,14 @@ func main() {
 			// log.Printf("Received a message: %s", d.Body)
 
 			ingresos, perdidas := ingresoPaquete(paquete)
+			gananciasTotal += ingresos
+			perdidasTotal += perdidas
 			registrarFinanza(paquete, ingresos, perdidas)
 
-			balance = balance + ingresos - perdidas
+			balance = balance + ingresos + perdidas
+			
+			log.Printf("Perdidas total: %f dignipesos", perdidasTotal)
+			log.Printf("Ganancias total: %f dignipesos", gananciasTotal)
 			log.Printf("Balance: %f dignipesos", balance)
 		}
 	}()
