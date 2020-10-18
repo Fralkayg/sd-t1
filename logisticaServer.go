@@ -285,7 +285,7 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 	// log.Printf("Generando linea en archivo registro.csv, Retail")
 
 	fileData = append(fileData, []string{timeString,
-		strconv.Itoa(idSeguimiento),
+		ordenRetail.GetId(),
 		"retail",
 		ordenRetail.GetProducto(),
 		strconv.Itoa(int(ordenRetail.GetValor())),
@@ -324,7 +324,7 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 
 	var fileData [][]string
 	fileData = append(fileData, []string{timestamp.Format("2006-01-02 15:04:05"),
-		strconv.Itoa(idSeguimiento),
+		ordenPyme.GetId(),
 		tipoPyme,
 		ordenPyme.GetProducto(),
 		strconv.Itoa(int(ordenPyme.GetValor())),

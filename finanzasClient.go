@@ -31,27 +31,30 @@ func convenioPYME(paquete infoPaquete) float32 {
 
 func ingresoPaquete(paquete infoPaquete) float32 {
 	var ingresos float32
+	var perdidas float32
 	ingresos = 0
+	perdidas = 0
 	if paquete.Estado == "Recibido" {
 		ingresos += float32(paquete.Valor)
 		ingresos += convenioPYME(paquete)
-		ingresos -= float32((paquete.Intentos - 1) * 10)
+		perdidas -= float32((paquete.Intentos - 1) * 10)
+		// ingresos -= float32((paquete.Intentos - 1) * 10)
 	} else {
 		if paquete.Tipo == "Normal" {
 			ingresos += 0
-			ingresos -= float32((paquete.Intentos - 1) * 10)
+			perdidas -= float32((paquete.Intentos - 1) * 10)
 		} else if paquete.Tipo == "Prioritario" {
 			ingresos += convenioPYME(paquete)
-			ingresos -= float32((paquete.Intentos - 1) * 10)
+			perdidas -= float32((paquete.Intentos - 1) * 10)
 		} else {
 			ingresos += float32(paquete.Valor)
-			ingresos -= float32((paquete.Intentos - 1) * 10)
+			perdidas -= float32((paquete.Intentos - 1) * 10)
 		}
 	}
-	return ingresos
+	return ingresos, perdidas
 }
 
-func registrarFinanza(paquete infoPaquete) {
+func registrarFinanza(paquete infoPaquete, ingresos float32, perdidas float32) {
 	finanzaFile, err := os.OpenFile("./registroFinanzas.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		finanzaAux, errAux := os.Create("./registroFinanzas.csv")
@@ -66,7 +69,7 @@ func registrarFinanza(paquete infoPaquete) {
 	var fileData [][]string
 
 	// log.Printf("Generando linea en archivo del camion xd")
-	ingresos := ingresoPaquete(paquete)
+	// ingresos := ingresoPaquete(paquete)
 	fileData = append(fileData, []string{
 		paquete.IDPaquete,
 		paquete.Tipo,
@@ -75,29 +78,13 @@ func registrarFinanza(paquete infoPaquete) {
 		//paquete.Destino,
 		strconv.Itoa(int(paquete.Intentos)),
 		paquete.Estado,
-		fmt.Sprintf("%f", ingresos)})
+		fmt.Sprintf("%f", ingresos),
+		fmt.Sprintf("%f", perdidas)})
 
 	csvWriter := csv.NewWriter(finanzaFile)
 	csvWriter.WriteAll(fileData)
 	// csvWriter.Flush()
 }
-
-// func main(){
-// 	//conn con rabbit xd
-// 	// usar colas rabbitMQ
-// 	// La representacion de los datos enviados a la cola de mensajes del sistema financiero debe ser mediante JSON.
-// 	// se obtiene un paquetito
-// 	var balance float32
-
-// 	for{
-// 		ingresos = ingresoPaquete(paquetito)
-// 		registrarFinanza(paquetito)
-
-// 		balance += ingresos
-// 		log.Printf("Balance: %f dignipesos",balance)
-// 	}
-
-// }
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -107,6 +94,8 @@ func failOnError(err error, msg string) {
 
 func main() {
 	var balance float32
+	balance = 0
+
 	conn, err := amqp.Dial("amqp://hahngoro:panconpalta@dist54:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -145,14 +134,14 @@ func main() {
 			// fmt.Println(paquete)
 			// log.Printf("Received a message: %s", d.Body)
 
-			ingresos := ingresoPaquete(paquete)
-			registrarFinanza(paquete)
+			ingresos, perdidas := ingresoPaquete(paquete)
+			registrarFinanza(paquete, ingresos, perdidas)
 
-			balance += ingresos
+			balance = balance + ingresos - perdidas
 			log.Printf("Balance: %f dignipesos", balance)
 		}
 	}()
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	log.Printf(" [*] Esperando la llegada de paquetes. Para salir presione las teclas CTRL+C")
 	<-forever
 }
