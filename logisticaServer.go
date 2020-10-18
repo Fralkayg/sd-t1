@@ -66,12 +66,22 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
+//Función: failOnError
+//Descripción: Función necesaria para el funcionamiento de RabbitMQ. Importada desde https://www.rabbitmq.com/tutorials/tutorial-one-go.html
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
+//Funcion: ActualizarSeguimiento
+//Descripción: Actualiza el registro en memoria de seguimiento de paquetes. Recibido - No recibido - Intentos realizados.
+//Parametros:
+//context: --
+//UpdateSeguimiento: Estructura de datos que entrega informacion del estado de un paquete.
+//Retorno:
+//StatusSeguimiento: Contiene un string con el mensaje del resultado de la operación
+//error: Mensaje de error en caso de fallar algo
 func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *pb.UpdateSeguimiento) (*pb.StatusSeguimiento, error) {
 	for s.lock {
 	}
@@ -143,6 +153,14 @@ func (s *server) ActualizarSeguimiento(ctx context.Context, updateSeguimiento *p
 	return &pb.StatusSeguimiento{Mensaje: "Paquete actualizado correctamente"}, nil
 }
 
+//Funcion: SolicitarSeguimiento
+//Descripción: Entrega el estado de un paquete solicitado por cliente
+//Parametros:
+//context: --
+//SeguimientoPyme: Estructura que contiene solo un entero representado el ID de seguimiento de un paquete (tanto para retail como para PYME)
+//Retorno:
+//SeguimientoPaqueteSolicitado: Estructura que contiene la información necesaria del paquete solicitado.
+//error: Mensaje de error en caso de fallar algo
 func (s *server) SolicitarSeguimiento(ctx context.Context, seguimientoPyme *pb.SeguimientoPyme) (*pb.SeguimientoPaqueteSolicitado, error) {
 	for s.lock {
 	}
@@ -162,6 +180,14 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, seguimientoPyme *pb.S
 	return &pb.SeguimientoPaqueteSolicitado{IDPaquete: paquete.IDPaquete, Estado: paquete.Estado}, nil
 }
 
+//Funcion: GenerarOrdenPyme
+//Descripción: Genera registro en memoria de un pedido de PYME realizado por cliente.
+//Parametros:
+//context: --
+//OrdenPyme: Estructura de datos que contiene la información de la orden realizada.
+//Retorno:
+//SeguimientoPyme: Estructura que contiene un entero con el ID de seguimiento de la orden generada.
+//error: Mensaje de error en caso de fallar algo
 func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) (*pb.SeguimientoPyme, error) {
 	//Chequear si el servidor esta ocupado en otro requerimiento
 	for s.lock {
@@ -227,6 +253,14 @@ func (s *server) GenerarOrdenPyme(ctx context.Context, ordenPyme *pb.OrdenPyme) 
 	return &pb.SeguimientoPyme{Id: int32(s.seguimiento)}, nil
 }
 
+//Funcion: GenerarOrdenRetail
+//Descripción: Genera registro en memoria de un pedido de retail realizado por cliente.
+//Parametros:
+//context: --
+//OrdenRetail: Estructura de datos que contiene la información de la orden realizada.
+//Retorno:
+//SeguimientoRetail: Estructura que contiene un entero con el ID de seguimiento de la orden generada.
+//error: Mensaje de error en caso de fallar algo
 func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRetail) (*pb.SeguimientoRetail, error) {
 	for s.lock {
 	}
@@ -264,6 +298,14 @@ func (s *server) GenerarOrdenRetail(ctx context.Context, ordenRetail *pb.OrdenRe
 	return &pb.SeguimientoRetail{Id: int32(s.seguimiento)}, nil
 }
 
+//Funcion: registroOrdenRetail
+//Descripción: Genera registro en un archivo CSV con la información de los pedidos generados.
+//Parametros:
+//context: --
+//OrdenRetail: Estructura de datos que contiene la información de la orden realizada.
+//idSeguimiento: ID seguimiento de orden.
+//Retorno:
+//--
 func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -298,6 +340,14 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 	// csvWriter.Flush()
 }
 
+//Funcion: registroOrdenPyme
+//Descripción: Genera registro en un archivo CSV con la información de los pedidos generados.
+//Parametros:
+//context: --
+//OrdenPyme: Estructura de datos que contiene la información de la orden realizada.
+//idSeguimiento: Estructura que contiene un entero con el ID de seguimiento de la orden generada.
+//Retorno:
+//--
 func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 	seguimientoFile, err := os.OpenFile("./registro.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -336,18 +386,30 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 	csvWriter.WriteAll(fileData)
 }
 
+//Función extraida de https://www.educative.io/edpresso/how-to-implement-a-queue-in-golang
+//Modificada para el funcionamiento con la estructura necesaria
 func enqueue(queue []paquete, element paquete) []paquete {
 	queue = append(queue, element) // Simply append to enqueue.
 	// fmt.Println("Enqueued:", element)
 	return queue
 }
 
+//Función extraida de https://www.educative.io/edpresso/how-to-implement-a-queue-in-golang
+//Modificada para el funcionamiento con la estructura necesaria
 func dequeue(queue []paquete) ([]paquete, paquete) {
 	element := queue[0] // The first element is the one to be dequeued.
 	// fmt.Println("Dequeued:", element)
 	return queue[1:], element // Slice off the element once it is dequeued.
 }
 
+//Funcion: SolicitarPaquete
+//Descripción: Se encarga de entregar los paquetes a cada camión dependiendo del tipo de camión y de los paquetes que se tienen en las colas.
+//Parametros:
+//context: --
+//Camion: Estructura de datos que contiene la información de los camiones.
+//Retorno:
+//PaqueteCamion: Estructura que contiene la información del paquete que se enviara al camión.
+//error: Mensaje de error en caso de fallar algo
 func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.PaqueteCamion, error) {
 	if camion.GetTipo() == "Retail" {
 		if len(s.colaRetail) > 0 {
@@ -509,6 +571,8 @@ func (s *server) SolicitarPaquete(ctx context.Context, camion *pb.Camion) (*pb.P
 	return &pb.PaqueteCamion{}, errors.New("Error al entregar paquete")
 }
 
+//Función extraida de https://yourbasic.org/golang/find-search-contains-slice/
+//Modificada para el funcionamiento de las estructura de seguimientoPaquete
 func Find(seguimientoPaquetes []SeguimientoPaquete, idSeguimiento int) (int, SeguimientoPaquete, error) {
 	for i, element := range seguimientoPaquetes {
 		if idSeguimiento == element.IDSeguimiento {
