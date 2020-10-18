@@ -278,7 +278,7 @@ func registroOrdenRetail(ordenRetail *pb.OrdenRetail, idSeguimiento int) {
 	defer seguimientoFile.Close()
 
 	timestamp := time.Now()
-	timeString := timestamp.Format("2020-01-01 00:00")
+	timeString := timestamp.Format("2006-01-02 15:04:05")
 
 	var fileData [][]string
 
@@ -323,7 +323,7 @@ func registroOrdenPyme(ordenPyme *pb.OrdenPyme, idSeguimiento int) {
 	// log.Printf("Generando linea en archivo registro.csv, PYME tipo %v", tipoPyme)
 
 	var fileData [][]string
-	fileData = append(fileData, []string{timestamp.Format("2020-01-01 00:00"),
+	fileData = append(fileData, []string{timestamp.Format("2006-01-02 15:04:05"),
 		strconv.Itoa(idSeguimiento),
 		tipoPyme,
 		ordenPyme.GetProducto(),
