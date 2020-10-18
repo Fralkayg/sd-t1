@@ -29,7 +29,7 @@ func convenioPYME(paquete infoPaquete) float32 {
 	}
 }
 
-func ingresoPaquete(paquete infoPaquete) float32 {
+func ingresoPaquete(paquete infoPaquete) (float32, float32) {
 	var ingresos float32
 	var perdidas float32
 	ingresos = 0
