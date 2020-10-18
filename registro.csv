@@ -1848,3 +1848,126 @@
 17170-10-10 00:00,5,prioritario,Crema para peinar,8,pyme,casa-E,5
 17170-10-10 00:00,6,prioritario,Placa madre,50,pyme,casa-B,6
 17170-10-10 00:00,7,normal,Procesador R,75,pyme,casa-N,7
+17170-10-10 00:00,1,prioritario,Secador de pelo,15,pyme,casa-K,1
+17170-10-10 00:00,2,prioritario,Jabón para la ducha,8,pyme,casa-A,2
+17170-10-10 00:00,3,normal,Acondicionador,10,pyme,casa-A,3
+17170-10-10 00:00,4,normal,Shampoo,10,pyme,casa-D,4
+17170-10-10 00:00,5,prioritario,Crema para peinar,8,pyme,casa-E,5
+17170-10-10 00:00,6,prioritario,Placa madre,50,pyme,casa-B,6
+17170-10-10 00:00,7,retail,Polera,10,tienda-A,casa-A,7
+17170-10-10 00:00,8,normal,Procesador R,75,pyme,casa-N,8
+17170-10-10 00:00,9,retail,Pantalón,12,tienda-B,casa-B,9
+17170-10-10 00:00,10,retail,Televisor,110,tienda-C,casa-C,10
+17170-10-10 00:00,11,retail,Consola de Videojuegos,95,tienda-A,casa-D,11
+17170-10-10 00:00,12,prioritario,Ventilador,10,pyme,casa-N,12
+17170-10-10 00:00,13,retail,Lavadora,100,tienda-B,casa-Q,13
+17170-10-10 00:00,14,normal,Gabinete,20,pyme,casa-S,14
+17170-10-10 00:00,15,prioritario,Fuente de poder,25,pyme,casa-P,15
+17170-10-10 00:00,16,normal,Memoria RAM,22,pyme,casa-R,16
+17170-10-10 00:00,17,normal,Procesador I,90,pyme,casa-N,17
+17170-10-10 00:00,18,retail,Polerón,15,tienda-C,casa-A,18
+17170-10-10 00:00,19,retail,Parca,20,tienda-B,casa-C,19
+17170-10-10 00:00,20,prioritario,Tarjeta de video,115,pyme,casa-I,20
+17170-10-10 00:00,21,retail,Pelota,5,tienda-C,casa-P,21
+17170-10-10 00:00,22,prioritario,Set de plumones,9,pyme,casa-C,22
+17170-10-10 00:00,23,normal,Cuadernos,5,pyme,casa-C,23
+17170-10-10 00:00,24,retail,Raqueta,20,tienda-A,casa-F,24
+17170-10-10 00:00,25,normal,Lapices,4,pyme,casa-I,25
+17170-10-10 00:00,26,retail,Refrigerador,120,tienda-B,casa-U,26
+17170-10-10 00:00,27,normal,Zapatillas de futbol,16,pyme,casa-E,27
+17170-10-10 00:00,28,retail,Tostador,25,tienda-C,casa-A,28
+17170-10-10 00:00,29,prioritario,Pelota de futbol,11,pyme,casa-V,29
+17170-10-10 00:00,30,prioritario,Raqueta de tenis,15,pyme,casa-Z,30
+17170-10-10 00:00,31,retail,Perfume,15,tienda-A,casa-N,31
+17170-10-10 00:00,32,prioritario,Palo de golf,18,pyme,casa-Y,32
+17170-10-10 00:00,33,retail,Tobillera,6,tienda-C,casa-N,33
+17170-10-10 00:00,34,normal,Polera,9,pyme,casa-F,34
+17170-10-10 00:00,35,prioritario,Pantalón,11,pyme,casa-C,35
+17170-10-10 00:00,36,normal,Abrigo,17,pyme,casa-U,36
+17170-10-10 00:00,37,prioritario,Bufanda,6,pyme,casa-A,37
+17170-10-10 00:00,38,retail,Notebook,80,tienda-B,casa-A,38
+17170-10-10 00:00,39,normal,Chaqueta,16,pyme,casa-X,39
+17170-10-10 00:00,40,retail,Set de ollas,50,tienda-C,casa-C,40
+17170-10-10 00:00,41,prioritario,Sueter,14,pyme,casa-C,41
+17170-10-10 00:00,42,retail,Parlante,25,tienda-C,casa-E,42
+17170-10-10 00:00,43,normal,Pantalón,10,pyme,casa-A,43
+17170-10-10 00:00,44,retail,Lampara,30,tienda-A,casa-A,44
+17170-10-10 00:00,45,normal,Polera,7,pyme,casa-Q,45
+17170-10-10 00:00,46,retail,Sillón,105,tienda-C,casa-C,46
+17170-10-10 00:00,47,normal,Pistachos: 200 g,4,pyme,casa-B,47
+17170-10-10 00:00,48,normal,Mani: 1 Kg,5,pyme,casa-A,48
+17170-10-10 00:00,49,retail,Mesa,90,tienda-A,casa-S,49
+17170-10-10 00:00,50,normal,Almendras: 500 g,5,pyme,casa-L,50
+17170-10-10 00:00,51,retail,Cama,115,tienda-B,casa-A,51
+17170-10-10 00:00,52,normal,Chia: 500 g,6,pyme,casa-D,52
+17170-10-10 00:00,53,prioritario,Arroz: 1 Kg,3,pyme,casa-C,53
+17170-10-10 00:00,1,prioritario,Secador de pelo,15,pyme,casa-K,1
+17170-10-10 00:00,2,prioritario,Jabón para la ducha,8,pyme,casa-A,2
+17170-10-10 00:00,3,normal,Acondicionador,10,pyme,casa-A,3
+17170-10-10 00:00,4,prioritario,Secador de pelo,15,pyme,casa-K,4
+17170-10-10 00:00,5,normal,Shampoo,10,pyme,casa-D,5
+17170-10-10 00:00,6,prioritario,Jabón para la ducha,8,pyme,casa-A,6
+17170-10-10 00:00,7,prioritario,Crema para peinar,8,pyme,casa-E,7
+17170-10-10 00:00,8,normal,Acondicionador,10,pyme,casa-A,8
+17170-10-10 00:00,9,prioritario,Placa madre,50,pyme,casa-B,9
+17170-10-10 00:00,10,normal,Shampoo,10,pyme,casa-D,10
+17170-10-10 00:00,11,prioritario,Crema para peinar,8,pyme,casa-E,11
+17170-10-10 00:00,12,normal,Procesador R,75,pyme,casa-N,12
+17170-10-10 00:00,13,prioritario,Placa madre,50,pyme,casa-B,13
+17170-10-10 00:00,14,normal,Procesador R,75,pyme,casa-N,14
+17170-10-10 00:00,15,prioritario,Ventilador,10,pyme,casa-N,15
+17170-10-10 00:00,16,prioritario,Ventilador,10,pyme,casa-N,16
+17170-10-10 00:00,17,normal,Gabinete,20,pyme,casa-S,17
+17170-10-10 00:00,18,normal,Gabinete,20,pyme,casa-S,18
+17170-10-10 00:00,19,prioritario,Fuente de poder,25,pyme,casa-P,19
+17170-10-10 00:00,20,prioritario,Fuente de poder,25,pyme,casa-P,20
+17170-10-10 00:00,21,normal,Memoria RAM,22,pyme,casa-R,21
+17170-10-10 00:00,22,normal,Procesador I,90,pyme,casa-N,22
+17170-10-10 00:00,23,prioritario,Tarjeta de video,115,pyme,casa-I,23
+17170-10-10 00:00,24,prioritario,Set de plumones,9,pyme,casa-C,24
+17170-10-10 00:00,25,normal,Memoria RAM,22,pyme,casa-R,25
+17170-10-10 00:00,26,normal,Procesador I,90,pyme,casa-N,26
+17170-10-10 00:00,27,normal,Cuadernos,5,pyme,casa-C,27
+17170-10-10 00:00,28,prioritario,Tarjeta de video,115,pyme,casa-I,28
+17170-10-10 00:00,29,normal,Lapices,4,pyme,casa-I,29
+17170-10-10 00:00,30,prioritario,Set de plumones,9,pyme,casa-C,30
+17170-10-10 00:00,31,normal,Zapatillas de futbol,16,pyme,casa-E,31
+17170-10-10 00:00,32,normal,Cuadernos,5,pyme,casa-C,32
+17170-10-10 00:00,33,normal,Lapices,4,pyme,casa-I,33
+17170-10-10 00:00,34,normal,Zapatillas de futbol,16,pyme,casa-E,34
+17170-10-10 00:00,35,prioritario,Pelota de futbol,11,pyme,casa-V,35
+17170-10-10 00:00,36,prioritario,Raqueta de tenis,15,pyme,casa-Z,36
+17170-10-10 00:00,37,retail,Polera,10,tienda-A,casa-A,37
+17170-10-10 00:00,38,prioritario,Palo de golf,18,pyme,casa-Y,38
+17170-10-10 00:00,39,retail,Pantalón,12,tienda-B,casa-B,39
+17170-10-10 00:00,40,normal,Polera,9,pyme,casa-F,40
+17170-10-10 00:00,41,retail,Televisor,110,tienda-C,casa-C,41
+17170-10-10 00:00,42,retail,Consola de Videojuegos,95,tienda-A,casa-D,42
+17170-10-10 00:00,43,retail,Lavadora,100,tienda-B,casa-Q,43
+17170-10-10 00:00,44,prioritario,Pantalón,11,pyme,casa-C,44
+17170-10-10 00:00,45,normal,Abrigo,17,pyme,casa-U,45
+17170-10-10 00:00,46,prioritario,Bufanda,6,pyme,casa-A,46
+17170-10-10 00:00,47,retail,Polerón,15,tienda-C,casa-A,47
+17170-10-10 00:00,48,normal,Chaqueta,16,pyme,casa-X,48
+17170-10-10 00:00,49,retail,Parca,20,tienda-B,casa-C,49
+17170-10-10 00:00,50,prioritario,Sueter,14,pyme,casa-C,50
+17170-10-10 00:00,51,retail,Pelota,5,tienda-C,casa-P,51
+17170-10-10 00:00,52,normal,Pantalón,10,pyme,casa-A,52
+17170-10-10 00:00,53,normal,Polera,7,pyme,casa-Q,53
+17170-10-10 00:00,54,retail,Raqueta,20,tienda-A,casa-F,54
+17170-10-10 00:00,55,normal,Pistachos: 200 g,4,pyme,casa-B,55
+17170-10-10 00:00,56,retail,Refrigerador,120,tienda-B,casa-U,56
+17170-10-10 00:00,57,normal,Mani: 1 Kg,5,pyme,casa-A,57
+17170-10-10 00:00,58,retail,Tostador,25,tienda-C,casa-A,58
+17170-10-10 00:00,59,retail,Perfume,15,tienda-A,casa-N,59
+17170-10-10 00:00,60,retail,Tobillera,6,tienda-C,casa-N,60
+17170-10-10 00:00,61,retail,Notebook,80,tienda-B,casa-A,61
+17170-10-10 00:00,62,normal,Almendras: 500 g,5,pyme,casa-L,62
+17170-10-10 00:00,63,retail,Set de ollas,50,tienda-C,casa-C,63
+17170-10-10 00:00,64,normal,Chia: 500 g,6,pyme,casa-D,64
+17170-10-10 00:00,65,retail,Parlante,25,tienda-C,casa-E,65
+17170-10-10 00:00,66,retail,Lampara,30,tienda-A,casa-A,66
+17170-10-10 00:00,67,retail,Sillón,105,tienda-C,casa-C,67
+17170-10-10 00:00,68,prioritario,Arroz: 1 Kg,3,pyme,casa-C,68
+17170-10-10 00:00,69,retail,Mesa,90,tienda-A,casa-S,69
+17170-10-10 00:00,70,retail,Cama,115,tienda-B,casa-A,70
